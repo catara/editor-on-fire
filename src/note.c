@@ -1038,9 +1038,10 @@ int eof_lyric_draw(EOF_LYRIC * np, int p, EOF_WINDOW *window)
 	long stringend;	//Stores the coordinate position of the end of the lyric string, used for clipping logic
 	long nplace;
 	long note_y;
-	long native = 0;
+	long native = 0;	//Tracks whether the lyric is going to display outside of the visible scope of pitches in the piano roll and will render in out_of_scope_color at the top/bottom of the piano roll
+	int out_of_scope_color = eof_color_red;	//The color the lyric note will render if it the native condition is found to be nonzero
 	int pcol = p == 1 ? eof_color_blue : p == 2 ? makecol(224, 255, 224) : 0;
-	int ncol = 0;
+	int ncol = eof_color_green;		//The color the lyric note will render
 	EOF_PHRASE_SECTION *lyricline;	//The line that this lyric is found to be in (if any) so the correct background color can be determined
 	int bgcol = eof_color_black;	//Unless the text is found to be in a lyric phrase, it will render with a black background
 	long endpos;		//This will store the effective end position for the lyric's rendering (taking lyric text, note rectangles and vocal slides into account)
@@ -1122,11 +1123,6 @@ int eof_lyric_draw(EOF_LYRIC * np, int p, EOF_WINDOW *window)
 	if(endpos < 0)
 		return -1;	//Return status:  Clipping to the left of the viewing window
 
-	if(p == 3)
-	{
-		pcol = eof_color_white;
-	}
-
 	nplace = np->note - eof_vocals_offset;
 	if(nplace < 0)
 	{
@@ -1153,11 +1149,38 @@ int eof_lyric_draw(EOF_LYRIC * np, int p, EOF_WINDOW *window)
 		note_y = EOF_EDITOR_RENDER_OFFSET + 15 + eof_screen_layout.vocal_y - (nplace % eof_screen_layout.vocal_view_size + 1) * eof_screen_layout.vocal_tail_size;
 	}
 
+	if(np->type)
+	{	//If rendering a lyric from a harmony vocal set, use per-harmony coloring
+		if(np->type == 1)
+		{	//HARM1
+			ncol = eof_color_blue;		//Rectangle color
+			pcol = eof_color_orange;	//Border color when note is selected/hit
+		}
+		else if(np->type == 2)
+		{	//HARM2
+			ncol = eof_color_red;
+			pcol = eof_color_green;
+		}
+		else
+		{	//HARM3
+			ncol = eof_color_yellow;
+			pcol = eof_color_blue;
+		}
+		out_of_scope_color = eof_color_white;
+	}
+
+	if(p == 3)
+	{
+		pcol = eof_color_white;	//The pen lyric will render with a white background regardless of vocal set to set it apart from other lyrics
+	}
+
 //Rewritten logic to remove duplicated code and render pitchless lyrics at the bottom of the piano roll in gray
 	vline(window->screen, npos, EOF_EDITOR_RENDER_OFFSET + 15 + eof_screen_layout.vocal_y - ((eof_screen_layout.vocal_view_size + 2) * eof_screen_layout.vocal_tail_size) / 2 - eof_screen_layout.note_marker_size, EOF_EDITOR_RENDER_OFFSET + 15 + eof_screen_layout.vocal_y - ((eof_screen_layout.vocal_view_size + 2) * eof_screen_layout.vocal_tail_size) / 2 + eof_screen_layout.note_marker_size, makecol(128, 128, 128));
 	if((np->note != 0) && !eof_is_freestyle(np->text))
 	{	//If this lyric is not pitchless/freestyle
-		ncol = native ? eof_color_red : eof_color_green;
+		if(native)
+			ncol = out_of_scope_color;	//If the lyric pitch is outside the current active range in the piano roll, render it in this color
+
 		if(np->note != EOF_LYRIC_PERCUSSION)
 		{
 			int sliderect[8] = {0};	//An array of 4 vertices, used to draw a diagonal rectangle

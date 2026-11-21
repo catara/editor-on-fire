@@ -630,11 +630,11 @@ int eof_compare_set_ini_string_setting(EOF_SONG *sp, char *tag, char *value, int
 
 	if(alter)
 	{
-		(void) snprintf(eof_log_string, sizeof(eof_log_string) - 1, "Warning:  Song INI setting \"%s\" doesn't match song.ini file's contents", logtag);
+		(void) snprintf(eof_log_string, sizeof(eof_log_string) - 1, "Warning:  song.ini entry \"%s\" doesn't match project contents", logtag);
 	}
 	else
 	{
-		(void) snprintf(eof_log_string, sizeof(eof_log_string) - 1, "Warning:  Song INI setting \"%s\" is not defined in song.ini", logtag);
+		(void) snprintf(eof_log_string, sizeof(eof_log_string) - 1, "Warning:  song.ini entry \"%s\" is not defined in project", logtag);
 	}
 	eof_log(eof_log_string, 1);
 	if(*function)

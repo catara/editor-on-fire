@@ -734,6 +734,18 @@ See the detailed explanation earlier in this document for instructions on how to
 <td>Evaluates as true if any lyric contains a punctuation character that is not in the specified list of characters (whitespace characters are not able to be defined in this list), in which case the %FIRST_LYRIC_CONTAINING_UNWANTED_PUNCTUATION% macro will print the position and text of the first offending lyric.  If the Rocksmith focus preference is enabled, harmony vocal sets are not checked.</td>
 </tr>
 <tr>
+<td>%IF_HARM1_DEFINES_OVERDRIVE%</td>
+<td>Evaluates as true if any lyric lines in the HARM1 vocal set are defined to have overdrive, which is against Rock Band authoring standards, in which case the %FIRST_HARM1_LYRIC_LINE_WITH_OVERDRIVE% macro will print the position and text of the first offending lyric line.</td>
+</tr>
+<tr>
+<td>%IF_HARM3_DEFINES_LYRIC_LINES%</td>
+<td>Evaluates as true if any lyric lines are defined in the HARM3 vocal set are defined to have overdrive, which is against Rock Band authoring standards, in which case the %FIRST_HARM3_LYRIC_LINE% macro will print the position and text of the first offending lyric line.</td>
+</tr>
+<tr>
+<td>%IF_PREV_VOCAL_SET_DOES_NOT_COVER_ALL_LYRICS_IN_SET_[NUMBER]%</td>
+<td>Evaluates as true if any lyric lines are defined in the specified vocal set (ie. substitute [NUMBER] for 1 to refer to HARM1) are not within the scope of any lyric lines in the previous vocal set (ie. "PART VOCALS" if this macro is targeting HARM1, "HARM2" if this macro is targeting HARM3), which is against Rock Band authoring standards, in which case the %FIRST_LYRIC_NOT_COVERED_IN_PREV_VOCAL_SET% macro will print the position and text of the first offending lyric.</td>
+</tr>
+<tr>
 <td>%IF_AUDIO_IS_LOADED%</td>
 <td>Evaluates as true if chart audio is loaded.</td>
 </tr>
@@ -1597,6 +1609,18 @@ RSNAP:  BEATABLE notes with right snap status</td>
 <tr>
 <td>%FIRST_LYRIC_CONTAINING_UNWANTED_PUNCTUATION%</td>
 <td>Prints the position and text of the first culprit of the %IF_ANY_LYRICS_CONTAIN_PUNCTUATION_EXCEPT_[LIST]% conditional macro.</td>
+</tr>
+<tr>
+<td>%FIRST_HARM1_LYRIC_LINE_WITH_OVERDRIVE%</td>
+<td>Prints the position and text of the first culprit of the %IF_HARM1_DEFINES_OVERDRIVE% conditional macro.</td>
+</tr>
+<tr>
+<td>%FIRST_HARM3_LYRIC_LINE%</td>
+<td>Prints the position and text of the first culprit of the %IF_HARM3_DEFINES_LYRIC_LINES% conditional macro.</td>
+</tr>
+<tr>
+<td>%FIRST_LYRIC_NOT_COVERED_IN_PREV_VOCAL_SET%</td>
+<td>Prints the position and text of the first culprit of the %IF_PREV_VOCAL_SET_DOES_NOT_COVER_ALL_LYRICS_IN_SET_[NUMBER]% conditional macro.</td>
 </tr>
 <tr>
 <td>%IR_COMMENTS_DEFINED_STRING%</td>
