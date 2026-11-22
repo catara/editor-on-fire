@@ -44,3 +44,9 @@ bin/eof.cfg
 bin/eof_log.txt
 bin/FFTW.wisdom
 /bin/os_clipboard.txt
+
+# macOS local build artifacts
+src/*.bak
+src/makefile.legacy_config
+Dockerfile.eof
+.build_counter

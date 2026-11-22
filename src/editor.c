@@ -1,3 +1,8 @@
+// [BEGIN gemini&catara | 2026-11-22 12:08 CET] Custom Rocksmith toolbar headers
+#include "menu/file.h"
+#include "menu/song.h"
+#include "menu/track.h"
+// [END gemini&catara | 2026-11-22 12:08 CET]
 #include <math.h>
 #include "menu/file.h"
 #include "menu/edit.h"
@@ -6631,6 +6636,47 @@ void eof_render_editor_window_common(EOF_WINDOW *window)
 			}
 			eof_build_mmssms_string(EOF_SEEK_POS, &min, &sec, NULL, NULL);
 			textprintf_ex(eof_screen, eof_mono_font, eof_screen_layout.controls_x + 153, 23 + 8, eof_color_white, -1, "%02u:%02u", min, sec);
+			{
+				// [BEGIN gemini&catara | 2026-11-22 12:08 CET] Render custom Rocksmith track, tone, and import toolbar buttons
+				const char *base_labels[] = {"Lead", "Bass", "Rhy", "BonG", "BonB", "Voc", "+Tone", "Import"};
+				int tracks[] = {9, 8, 12, 14, 11, 6, -1, -1};
+				int w = 44;
+				int bx = eof_screen_layout.controls_x - (8 * (w + 2)) - 4;
+				int by = 22 + 8;
+				int i;
+				for(i = 0; i < 8; i++)
+				{
+					char lbl[24];
+					int tr = tracks[i];
+					int has_notes = (eof_song && tr > 0 && eof_get_track_size_all(eof_song, tr) > 0) ? 1 : 0;
+					int x1 = bx + i * (w + 2);
+					int col = makecol(60, 60, 60);
+					int tcol = (i == 6) ? eof_color_yellow : ((i == 7) ? eof_color_cyan : eof_color_white);
+					if(tr > 0 && eof_selected_track == tr) col = eof_color_green;
+					else if(has_notes) col = makecol(40, 105, 175);
+					snprintf(lbl, sizeof(lbl), "%s%s", has_notes ? "*" : "", base_labels[i]);
+					if(eof_song && tr > 0 && tr != 6)
+					{
+						unsigned long arr = eof_get_pro_guitar_track_arrangement_type(eof_song, tr);
+						unsigned long flg = eof_song->track[tr]->flags;
+						char tags[8] = {0};
+						int tp = 0;
+						if(arr == 2) tags[tp++] = 82;
+						else if(arr == 3 && tr != 9) tags[tp++] = 76;
+						if(flg & 16) tags[tp++] = 66;
+						if(flg & 64) tags[tp++] = 65;
+						if(tp > 0)
+						{
+							strncat(lbl, ":", sizeof(lbl) - strlen(lbl) - 1);
+							strncat(lbl, tags, sizeof(lbl) - strlen(lbl) - 1);
+						}
+					}
+					rectfill(eof_screen, x1, by, x1 + w, by + 16, col);
+					rect(eof_screen, x1, by, x1 + w, by + 16, eof_color_white);
+					textout_centre_ex(eof_screen, font, lbl, x1 + w / 2, by + 5, tcol, -1);
+				}
+				// [END gemini&catara | 2026-11-22 12:08 CET]
+			}
 		}
 	}
 
@@ -8243,6 +8289,45 @@ void eof_editor_logic_common(void)
 			}
 		}
 	}//If the chart or fret catalog is playing
+
+	/* [BEGIN gemini&catara | 2026-11-22 12:08 CET] Handle custom Rocksmith toolbar button clicks */
+	if(!eof_full_height_3d_preview && !eof_full_screen_3d)
+	{
+		static int rs_btn_pressed = -1;
+		int menu_idx[] = {8, 7, 11, 13, 10, 5};
+		int w = 44;
+		int bx = eof_screen_layout.controls_x - (8 * (w + 2)) - 4;
+		int by = 22 + 8;
+		if((eof_scaled_mouse_y >= by) && (eof_scaled_mouse_y < by + 17))
+		{
+			int i;
+			if(mouse_b & 1)
+			{
+				for(i = 0; i < 8; i++)
+				{
+					int x1 = bx + i * (w + 2);
+					if((eof_scaled_mouse_x >= x1) && (eof_scaled_mouse_x <= x1 + w)) rs_btn_pressed = i;
+				}
+			}
+			else if(rs_btn_pressed >= 0)
+			{
+				int act = rs_btn_pressed;
+				rs_btn_pressed = -1;
+				if(act < 6 && (eof_track_selected_menu + menu_idx[act])->proc) (void) (eof_track_selected_menu + menu_idx[act])->proc();
+				else if(act == 6) (void) eof_track_rs_tone_change_add();
+				else if(act == 7)
+				{
+					if(eof_selected_track == 6) (void) eof_menu_file_lyrics_import();
+					else (void) eof_menu_file_gp_import();
+				}
+			}
+		}
+		else if(!(mouse_b & 1))
+		{
+			rs_btn_pressed = -1;
+		}
+	}
+	/* [END gemini&catara | 2026-11-22 12:08 CET] */
 
 	/* handle playback controls */
 	if(!eof_full_height_3d_preview)
