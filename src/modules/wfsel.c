@@ -11,6 +11,7 @@
 #endif
 
 #include "wfsel.h"
+#include "../utility.h"
 
 #ifdef USEMEMWATCH
 #include "../memwatch.h"
