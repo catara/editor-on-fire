@@ -4672,6 +4672,38 @@ void eof_destroy_data(void)
 	}
 }
 
+
+// [BEGIN gemini&catara | 2026-11-24 15:32 CET] Persist & auto-load last .eof song + default to PART REAL_BASS & 1st difficulty
+static void eof_save_last_song_path(void) {
+	const char *home = getenv("HOME");
+	if(home && eof_song_loaded && eof_filename[0]) {
+		char dir[1024], fp[1024], cmd[1100];
+		snprintf(dir, sizeof(dir), "%s/Library/Application Support/EOF", home);
+		snprintf(cmd, sizeof(cmd), "mkdir -p \"%s\"", dir);
+		(void)system(cmd);
+		snprintf(fp, sizeof(fp), "%s/last_song.txt", dir);
+		FILE *f = fopen(fp, "w");
+		if(f) { fprintf(f, "%s\n", eof_filename); fclose(f); }
+	}
+}
+static void eof_get_last_song_path(char *out, size_t sz) {
+	const char *home = getenv("HOME");
+	out[0] = 0;
+	if(home) {
+		char fp[1024];
+		snprintf(fp, sizeof(fp), "%s/Library/Application Support/EOF/last_song.txt", home);
+		FILE *f = fopen(fp, "r");
+		if(f) {
+			if(fgets(out, sz, f)) {
+				size_t n = strlen(out);
+				while(n > 0 && (out[n-1] == '\n' || out[n-1] == '\r')) out[--n] = 0;
+			}
+			fclose(f);
+		}
+	}
+}
+// [END gemini&catara | 2026-11-24 15:32 CET]
+
 int eof_initialize(int argc, char * argv[])
 {
 	int i, eof_zoom_backup;
@@ -5218,6 +5250,21 @@ int eof_initialize(int argc, char * argv[])
 		eof_recovery = pack_fopen(eof_recover_on_path, "w");	//Open the recovery active file for writing
 	}
 
+	/* [BEGIN gemini&catara | 2026-11-24 15:32 CET] Auto-load previous .eof song if no CLI arg passed */
+	{
+		static char last_eof_buf[1024] = {0};
+		static char *fake_argv[2] = {NULL, last_eof_buf};
+		if(argc <= 1) {
+			eof_get_last_song_path(last_eof_buf, sizeof(last_eof_buf));
+			if(last_eof_buf[0] && exists(last_eof_buf)) {
+				fake_argv[0] = argv[0];
+				argc = 2;
+				argv = fake_argv;
+			}
+		}
+	}
+	/* [END gemini&catara | 2026-11-24 15:32 CET] */
+
 	/* see if we are opening a file on launch */
 	for(i = 1; i < argc; i++)
 	{	//For each command line argument
@@ -5519,6 +5566,7 @@ void eof_exit(void)
 	//Delete the undo/redo related files
 	(void) eof_validate_temp_folder();	//Attempt to set the current working directory if it isn't EOF's executable/resource folder
 
+	eof_save_last_song_path();
 	eof_save_config("eof.cfg");
 	if(!exists("eof.cfg"))
 	{
@@ -6236,6 +6284,11 @@ int main(int argc, char * argv[])
 		al_start_timer(timer);
 	#endif
 
+	// [BEGIN gemini&catara | 2026-11-24 15:32 CET] Default to PART REAL_BASS (menu index 7) and 1st difficulty (0)
+	if((eof_track_selected_menu + 7)->proc) (void)(eof_track_selected_menu + 7)->proc();
+	eof_note_type = 0;
+	eof_note_type_i = 0;
+	// [END gemini&catara | 2026-11-24 15:32 CET]
 	eof_log("\tEntering main program loop", 1);
 
 	time1 = clock();

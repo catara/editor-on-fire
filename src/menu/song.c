@@ -253,6 +253,121 @@ DIALOG eof_ini_add_dialog[] =
 };
 
 ///When inserting items into this dialog menu that are before the loading text, update eof_popup_dialog() with the new indexes for the loading text related fields
+
+// [BEGIN gemini&catara | 2026-11-24 13:52 CET] CDLC & Fork Metadata dialog (18 text boxes w/ Paste + 8 checkboxes + 3 synced = 29 fields)
+static char cdlc_tbufs[18][512];
+static void eof_cdlc_meta_filepath(char *out, size_t sz) {
+	if(eof_song_path[0]) snprintf(out, sz, "%s/cdlc_meta.ini", eof_song_path);
+	else snprintf(out, sz, "cdlc_meta.ini");
+}
+static int eof_cdlc_paste_btn(DIALOG *d) {
+	int idx = d->d1;
+	FILE *fp = popen("pbpaste", "r");
+	if(fp && idx >= 0 && idx < 18) {
+		size_t n = fread(cdlc_tbufs[idx], 1, 510, fp);
+		cdlc_tbufs[idx][n] = 0;
+		while(n > 0 && (cdlc_tbufs[idx][n-1] == '\n' || cdlc_tbufs[idx][n-1] == '\r')) cdlc_tbufs[idx][--n] = 0;
+		pclose(fp);
+	}
+	return D_REDRAW;
+}
+static void eof_cdlc_meta_rw(DIALOG *dlg, int save) {
+	char path[1024];
+	const char *tkeys[] = {"Version","CDLCID","txt_EoFPath","YBLink","BasedOnYB","BasedOnCF","BaseOnRB","BasedOn_GP","TabLinks","Spotify","Description","toDo","ToneDetails","SaveRemotelyPath","PackageDate","UpdateDate","PackageDetails","CF_Author"};
+	const char *ckeys[] = {"SaveInVerisonInfo","SaveInDB","SaveRemotely","Has_Slide","Has_Acoustic","NOTProductionReady","Has_AIUsedForGeneration","Is_AIFullyGenerated"};
+	int i;
+	eof_cdlc_meta_filepath(path, sizeof(path));
+	push_config_state();
+	set_config_file(path);
+	for(i = 0; i < 18; i++) {
+		if(save) set_config_string("CDLC", tkeys[i], cdlc_tbufs[i]);
+		else strncpy(cdlc_tbufs[i], get_config_string("CDLC", tkeys[i], i == 2 ? eof_filename : ""), 510);
+	}
+	for(i = 0; i < 8; i++) {
+		if(save) set_config_int("CDLC", ckeys[i], (dlg[55 + i].flags & D_SELECTED) ? 1 : 0);
+		else dlg[55 + i].flags = get_config_int("CDLC", ckeys[i], 0) ? D_SELECTED : 0;
+	}
+	if(save) {
+		set_config_string("CDLC", "Songtitle", eof_etext);
+		set_config_string("CDLC", "Artist", eof_etext2);
+		set_config_string("CDLC", "Album", eof_etext8);
+		flush_config_file();
+	}
+	pop_config_state();
+}
+DIALOG eof_cdlc_metadata_dialog[] = {
+	{ eof_window_proc, 0, 0, 680, 460, 0, 0, 0, 0, 0, 0, "CDLC / Fork Properties (29 Fields)", NULL, NULL },
+	{ d_agup_text_proc, 12, 30, 96, 12, 0, 0, 0, 0, 0, 0, "Version", NULL, NULL },
+	{ eof_edit_proc, 112, 26, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[0], NULL, NULL },
+	{ d_agup_push_proc, 386, 26, 44, 18, 0, 0, 0, 0, 0, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 51, 96, 12, 0, 0, 0, 0, 0, 0, "CDLCID", NULL, NULL },
+	{ eof_edit_proc, 112, 47, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[1], NULL, NULL },
+	{ d_agup_push_proc, 386, 47, 44, 18, 0, 0, 0, 0, 1, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 72, 96, 12, 0, 0, 0, 0, 0, 0, "txt_EoFPath", NULL, NULL },
+	{ eof_edit_proc, 112, 68, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[2], NULL, NULL },
+	{ d_agup_push_proc, 386, 68, 44, 18, 0, 0, 0, 0, 2, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 93, 96, 12, 0, 0, 0, 0, 0, 0, "YBLink", NULL, NULL },
+	{ eof_edit_proc, 112, 89, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[3], NULL, NULL },
+	{ d_agup_push_proc, 386, 89, 44, 18, 0, 0, 0, 0, 3, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 114, 96, 12, 0, 0, 0, 0, 0, 0, "BasedOnYB", NULL, NULL },
+	{ eof_edit_proc, 112, 110, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[4], NULL, NULL },
+	{ d_agup_push_proc, 386, 110, 44, 18, 0, 0, 0, 0, 4, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 135, 96, 12, 0, 0, 0, 0, 0, 0, "BasedOnCF", NULL, NULL },
+	{ eof_edit_proc, 112, 131, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[5], NULL, NULL },
+	{ d_agup_push_proc, 386, 131, 44, 18, 0, 0, 0, 0, 5, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 156, 96, 12, 0, 0, 0, 0, 0, 0, "BaseOnRB", NULL, NULL },
+	{ eof_edit_proc, 112, 152, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[6], NULL, NULL },
+	{ d_agup_push_proc, 386, 152, 44, 18, 0, 0, 0, 0, 6, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 177, 96, 12, 0, 0, 0, 0, 0, 0, "BasedOn_GP", NULL, NULL },
+	{ eof_edit_proc, 112, 173, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[7], NULL, NULL },
+	{ d_agup_push_proc, 386, 173, 44, 18, 0, 0, 0, 0, 7, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 198, 96, 12, 0, 0, 0, 0, 0, 0, "TabLinks", NULL, NULL },
+	{ eof_edit_proc, 112, 194, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[8], NULL, NULL },
+	{ d_agup_push_proc, 386, 194, 44, 18, 0, 0, 0, 0, 8, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 219, 96, 12, 0, 0, 0, 0, 0, 0, "Spotify", NULL, NULL },
+	{ eof_edit_proc, 112, 215, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[9], NULL, NULL },
+	{ d_agup_push_proc, 386, 215, 44, 18, 0, 0, 0, 0, 9, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 240, 96, 12, 0, 0, 0, 0, 0, 0, "Description", NULL, NULL },
+	{ eof_edit_proc, 112, 236, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[10], NULL, NULL },
+	{ d_agup_push_proc, 386, 236, 44, 18, 0, 0, 0, 0, 10, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 261, 96, 12, 0, 0, 0, 0, 0, 0, "toDo", NULL, NULL },
+	{ eof_edit_proc, 112, 257, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[11], NULL, NULL },
+	{ d_agup_push_proc, 386, 257, 44, 18, 0, 0, 0, 0, 11, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 282, 96, 12, 0, 0, 0, 0, 0, 0, "ToneDetails", NULL, NULL },
+	{ eof_edit_proc, 112, 278, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[12], NULL, NULL },
+	{ d_agup_push_proc, 386, 278, 44, 18, 0, 0, 0, 0, 12, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 303, 96, 12, 0, 0, 0, 0, 0, 0, "SaveRemotelyPath", NULL, NULL },
+	{ eof_edit_proc, 112, 299, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[13], NULL, NULL },
+	{ d_agup_push_proc, 386, 299, 44, 18, 0, 0, 0, 0, 13, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 324, 96, 12, 0, 0, 0, 0, 0, 0, "PackageDate", NULL, NULL },
+	{ eof_edit_proc, 112, 320, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[14], NULL, NULL },
+	{ d_agup_push_proc, 386, 320, 44, 18, 0, 0, 0, 0, 14, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 345, 96, 12, 0, 0, 0, 0, 0, 0, "UpdateDate", NULL, NULL },
+	{ eof_edit_proc, 112, 341, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[15], NULL, NULL },
+	{ d_agup_push_proc, 386, 341, 44, 18, 0, 0, 0, 0, 15, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 366, 96, 12, 0, 0, 0, 0, 0, 0, "PackageDetails", NULL, NULL },
+	{ eof_edit_proc, 112, 362, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[16], NULL, NULL },
+	{ d_agup_push_proc, 386, 362, 44, 18, 0, 0, 0, 0, 16, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_text_proc, 12, 387, 96, 12, 0, 0, 0, 0, 0, 0, "CF_Author", NULL, NULL },
+	{ eof_edit_proc, 112, 383, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[17], NULL, NULL },
+	{ d_agup_push_proc, 386, 383, 44, 18, 0, 0, 0, 0, 17, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
+	{ d_agup_check_proc, 444, 26, 224, 16, 0, 0, 0, 0, 1, 0, "SaveInVerisonInfo", NULL, NULL },
+	{ d_agup_check_proc, 444, 48, 224, 16, 0, 0, 0, 0, 1, 0, "SaveInDB", NULL, NULL },
+	{ d_agup_check_proc, 444, 70, 224, 16, 0, 0, 0, 0, 1, 0, "SaveRemotely", NULL, NULL },
+	{ d_agup_check_proc, 444, 92, 224, 16, 0, 0, 0, 0, 1, 0, "Has_Slide", NULL, NULL },
+	{ d_agup_check_proc, 444, 114, 224, 16, 0, 0, 0, 0, 1, 0, "Has_Acoustic", NULL, NULL },
+	{ d_agup_check_proc, 444, 136, 224, 16, 0, 0, 0, 0, 1, 0, "NOTProductionReady", NULL, NULL },
+	{ d_agup_check_proc, 444, 158, 224, 16, 0, 0, 0, 0, 1, 0, "Has_AIUsedForGeneration", NULL, NULL },
+	{ d_agup_check_proc, 444, 180, 224, 16, 0, 0, 0, 0, 1, 0, "Is_AIFullyGenerated", NULL, NULL },
+	{ d_agup_text_proc, 444, 220, 224, 28, 0, 0, 0, 0, 0, 0, "Songtitle, Artist & Album sync with Song Properties", NULL, NULL },
+	{ d_agup_button_proc, 450, 416, 95, 28, 0, 0, 13, D_EXIT, 0, 0, "Save", NULL, NULL },
+	{ d_agup_button_proc, 558, 416, 95, 28, 0, 0, 0, D_EXIT, 0, 0, "Cancel", NULL, NULL },
+	{ NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL }
+};
+
+int eof_menu_cdlc_metadata(DIALOG *d) { (void)d; eof_cdlc_meta_rw(eof_cdlc_metadata_dialog, 0); eof_color_dialog(eof_cdlc_metadata_dialog, gui_fg_color, gui_bg_color); eof_conditionally_center_dialog(eof_cdlc_metadata_dialog); if(eof_popup_dialog(eof_cdlc_metadata_dialog, 2) == 64) eof_cdlc_meta_rw(eof_cdlc_metadata_dialog, 1); return D_REDRAW; }
+// [END gemini&catara | 2026-11-24 13:52 CET]
+
 DIALOG eof_song_properties_dialog[] =
 {
 	/* (proc)              (x)  (y)  (w)  (h)  (fg) (bg) (key) (flags) (d1) (d2) (dp)                    (dp2) (dp3) */
@@ -286,6 +401,7 @@ DIALOG eof_song_properties_dialog[] =
 	{ d_agup_check_proc,   160, 331, 200, 16,  0,   0,   0,    0,      1,   0,   "Use accurate time signatures", NULL, NULL },
 	{ d_agup_check_proc,   160, 346, 206, 16,  0,   0,   0,    0,      1,   0,   "FoFLC export w/o pitch shifts", NULL, NULL },
 	{ d_agup_button_proc,  380, 315, 84,  24,  0,   0,   '\r', D_EXIT, 0,   0,   "OK",                   NULL, NULL },
+	{ d_agup_push_proc,    380, 280, 84,  26,  0,   0,   0,      0,      0,   0,   "CDLC Meta...",         NULL, (void *)eof_menu_cdlc_metadata },
 	{ NULL,                0,   0,   0,   0,   0,   0,   0,    0,      0,   0,   NULL,                   NULL, NULL }
 };
 

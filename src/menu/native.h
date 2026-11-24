@@ -3,8 +3,10 @@
 
 #include <allegro.h>
 
-#define EOF_MAX_NATIVE_MENUS 256
-#define EOF_MAX_MENU_ITEMS  1024
+// [BEGIN gemini&catara | 2026-11-22 14:04 CET] Increase native menu capacity for rc16 + Rocksmith Focus submenus
+#define EOF_MAX_NATIVE_MENUS 1024
+#define EOF_MAX_MENU_ITEMS  8192
+// [END gemini&catara | 2026-11-22 14:04 CET]
 
 bool eof_set_up_native_menus(MENU * mp);
 void eof_update_native_menus(void);

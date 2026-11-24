@@ -241,7 +241,9 @@ int eof_menu_help_about(void)
 	eof_cursor_visible = 0;
 	eof_pen_visible = 0;
 	eof_render();
-	(void) alert(EOF_VERSION_STRING, NULL, EOF_COPYRIGHT_STRING, "Okay", NULL, KEY_ENTER, 0);
+	// [BEGIN gemini&catara | 2026-11-22 13:41 CET] Display Catara fork & upstream raynebc base details in About dialog
+	(void) alert(EOF_VERSION_STRING, "Forked from raynebc/editor-on-fire main as of 2026-11-22 (Catara's fork v0.1.1)", EOF_COPYRIGHT_STRING, "Okay", NULL, KEY_ENTER, 0);
+	// [END gemini&catara | 2026-11-22 13:41 CET]
 	eof_clear_input();
 	eof_show_mouse(NULL);
 	eof_cursor_visible = 1;

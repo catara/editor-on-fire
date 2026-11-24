@@ -62,6 +62,9 @@ static const char * get_menu_text(const char * in, char * out)
 
 static bool index_a4_menu_item(int id, MENU * mp)
 {
+	// [BEGIN gemini&catara | 2026-11-22 14:04 CET] Guard against out-of-bounds menu IDs
+	if(!a4_menu_item_data || id < 0 || id >= EOF_MAX_MENU_ITEMS || !mp) return false;
+	// [END gemini&catara | 2026-11-22 14:04 CET]
 	a4_menu_item_data[id].menu_item = mp;
 	a4_menu_item_data[id].name = mp->text ? malloc(strlen(mp->text) + 1) : NULL;
 	if(a4_menu_item_data[id].name)
@@ -186,7 +189,9 @@ bool eof_set_up_native_menus(MENU * mp)
 	{
 		return false;
 	}
-	a4_menu_item_data = malloc(sizeof(A4_MENU_ITEM_DATA) * EOF_MAX_MENU_ITEMS);
+	// [BEGIN gemini&catara | 2026-11-22 14:04 CET] Zero-initialize menu item table
+	a4_menu_item_data = calloc(EOF_MAX_MENU_ITEMS, sizeof(A4_MENU_ITEM_DATA));
+	// [END gemini&catara | 2026-11-22 14:04 CET]
 	if(!a4_menu_item_data)
 	{
 		return false;
@@ -220,6 +225,9 @@ static bool caption_changed(const char * mcap, const char * nmcap)
 
 static bool update_native_menu(int m)
 {
+	// [BEGIN gemini&catara | 2026-11-22 14:04 CET] Guard against uninitialized menu entries
+	if(!native_menu[0] || !a4_menu_item_data || m < 1 || m >= EOF_MAX_MENU_ITEMS || !a4_menu_item_data[m].menu_item) return false;
+	// [END gemini&catara | 2026-11-22 14:04 CET]
 	ALLEGRO_MENU * mp = NULL;
 	int index = -1;
 	int i;
@@ -264,6 +272,9 @@ void eof_update_native_menus(void)
 
 static void call_menu_proc(int id)
 {
+	// [BEGIN gemini&catara | 2026-11-22 14:04 CET] Bounds-check native menu click ID
+	if(!a4_menu_item_data || id < 1 || id >= current_id || !a4_menu_item_data[id].menu_item) return;
+	// [END gemini&catara | 2026-11-22 14:04 CET]
 	if(a4_menu_item_data[id].menu_item->proc)
 	{
 		a4_menu_item_data[id].menu_item->proc();
@@ -273,6 +284,9 @@ static void call_menu_proc(int id)
 void eof_handle_native_menu_clicks(void)
 {
 	ALLEGRO_EVENT event;
+	// [BEGIN gemini&catara | 2026-11-22 14:04 CET] Guard NULL event_queue
+	if(!event_queue) return;
+	// [END gemini&catara | 2026-11-22 14:04 CET]
 
 	while(!al_event_queue_is_empty(event_queue))
 	{

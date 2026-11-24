@@ -42,9 +42,13 @@ make -f makefile.legacy clean
 make -f makefile.legacy -j$(sysctl -n hw.ncpu)
 
 APP_OUT="$HOME/Desktop/EOF-Cocoa.app"
+CFG_KEEP="$HOME/Library/Application Support/EOF/eof.cfg"
+mkdir -p "$(dirname "$CFG_KEEP")"
+[ -f "$APP_OUT/Contents/Resources/eof/eof.cfg" ] && cp "$APP_OUT/Contents/Resources/eof/eof.cfg" "$CFG_KEEP"
 rm -rf "$APP_OUT"
 mv ~/EOF.app "$APP_OUT"
 mkdir -p "$APP_OUT/Contents/libs"
+[ -f "$CFG_KEEP" ] && cp "$CFG_KEEP" "$APP_OUT/Contents/Resources/eof/eof.cfg"
 xattr -cr "$APP_OUT"
 xattr -cr "$APP_OUT"
 xattr -cr "$APP_OUT"
@@ -75,6 +79,14 @@ if os.path.exists(rf):
     if row not in txt:
         txt = txt.rstrip() + "\n" + row + "\n"
     open(rf, "w").write(txt)
+hf = os.path.join(repo, "src/menu/help.c")
+if os.path.exists(hf):
+    hraw = open(hf, "rb").read()
+    heol = b"\r\n" if b"\r\n" in hraw else b"\n"
+    hstr = hraw.decode("latin1").replace("\r\n", "\n")
+    d_only = datetime.datetime.now().strftime("%Y-%m-%d")
+    hstr = re.sub(r"as of [0-9-]+ \(Catara's fork v0\.1\.\d+\)", f"as of {d_only} (Catara's fork v0.1.{cnt})", hstr)
+    open(hf, "wb").write(hstr.replace("\n", "\r\n" if heol == b"\r\n" else "\n").encode("latin1"))
 print(f"Updated README_MACOS_BUILD.md -> {ver}")
 '
 # [END gemini&catara]
