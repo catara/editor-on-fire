@@ -3338,7 +3338,6 @@ int eof_menu_copy_lyric_lines_from_vocal_set(EOF_SONG *sp, unsigned char source_
 	}
 
 	qsort(sp->vocal_track[0]->line, (size_t)sp->vocal_track[0]->lines, sizeof(EOF_PHRASE_SECTION), eof_song_qsort_phrase_sections);	//Sort the lyric lines now that they have been appropriately copied
-	eof_reset_lyric_preview_lines();
 
 	///DEBUG
 	eof_check_and_log_lyric_line_errors(eof_song, 0);

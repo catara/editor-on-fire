@@ -1067,7 +1067,6 @@ void eof_set_seek_position(unsigned long pos)
 		eof_set_music_pos(&eof_music_pos, pos);
 		eof_music_actual_pos = eof_music_pos.value;
 		eof_mix_seek(eof_music_actual_pos);
-		eof_reset_lyric_preview_lines();
 	}
 }
 

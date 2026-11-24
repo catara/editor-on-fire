@@ -818,8 +818,6 @@ long eof_put_porpos_sp(EOF_SONG *sp, unsigned long beat, double porpos, double o
 	//Returns the timestamp of the specified position (defined as a percentage) within a specified beat, or -1 on error
 	//porpos can be a positive or negative value larger in magnitude than 100.0 to indicate the position is more than one beat length from the specified beat
 long eof_put_porpos(unsigned long beat, double porpos, double offset);	//Calls eof_put_porpos_sp() against eof_song
-void eof_reset_lyric_preview_lines(void);	//Resets the preview line variables to 0
-void eof_find_lyric_preview_lines(void);	//Sets the first and second preview line variables
 void eof_emergency_stop_music(void);	//Stops audio playback
 void eof_fix_catalog_selection(void);	//Ensures that a valid catalog entry is active, if any
 unsigned long eof_count_selected_and_unselected_notes(unsigned long *total);
@@ -957,7 +955,7 @@ void eof_read_global_keys(void);	//Reads and acts on various keyboard combinatio
 void eof_lyric_logic(void);	//Performs various vocal editor logic
 void eof_note_logic(void);	//Performs various note catalog logic
 void eof_logic(void);		//Performs various editor logic
-void eof_render_lyric_preview(BITMAP * bp);	//Renders lyric preview lines (found by eof_find_lyric_preview_lines()) to the specified bitmap
+void eof_render_lyric_preview(BITMAP * bp);	//Renders lyric preview lines
 int eof_initialize(int argc, char * argv[]);	//Initializes various values, checks for crash recovery, parses command line parameters, etc.
 #ifdef ALLEGRO_WINDOWS
 	int eof_initialize_windows(void);	//Performs additional initialization for the Windows platform

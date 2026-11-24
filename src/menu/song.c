@@ -4571,6 +4571,10 @@ int eof_menu_song_swap_piano_rolls(void)
 	temp_type = eof_note_type;
 	temp_pos = eof_music_pos.value;			//And remember the position
 	eof_note_type = eof_note_type2;		//Update the active difficulty before updating the title bar
+	if(eof_track_is_vocal_track(eof_song, eof_selected_track2))
+	{	//If the secondary piano roll is the vocal track
+		eof_note_type_v = eof_note_type2;	//Update the vocal difficulty specific active difficulty variable, which will take precedence in eof_menu_track_selected_track_number()
+	}
 	(void) eof_menu_track_selected_track_number(eof_selected_track2, 1);	//Change to the track difficulty of the secondary piano roll and update title bar
 	if(!eof_sync_piano_rolls)
 	{	//If the secondary piano roll is tracking its own position

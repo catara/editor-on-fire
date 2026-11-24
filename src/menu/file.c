@@ -1217,7 +1217,6 @@ int eof_menu_file_lyrics_import(void)
 			eof_log("\tLyric import successful", 1);
 			eof_truncate_chart(eof_song);	//Add beats to the chart if necessary to encompass the imported lyrics
 			eof_track_fixup_notes(eof_song, EOF_TRACK_VOCALS, 0);
-			eof_reset_lyric_preview_lines();
 			(void) replace_filename(eof_last_lyric_path, returnedfn, "", sizeof(eof_last_lyric_path));	//Set the last loaded lyric file path
 		}
 
@@ -1319,7 +1318,6 @@ int eof_menu_file_midi_import(void)
 			eof_change_count = 0;
 		}
 	}
-	eof_reset_lyric_preview_lines();
 	eof_show_mouse(NULL);
 	eof_cursor_visible = 1;
 	eof_pen_visible = 1;
@@ -7175,7 +7173,6 @@ int eof_menu_file_bf_import(void)
 			eof_log("\tImport failed", 1);
 		}
 	}
-	eof_reset_lyric_preview_lines();
 	eof_show_mouse(NULL);
 	eof_cursor_visible = 1;
 	eof_pen_visible = 1;
@@ -8138,7 +8135,6 @@ int eof_menu_file_array_txt_import(void)
 			eof_log("\tData loaded", 1);
 		}
 	}
-	eof_reset_lyric_preview_lines();
 	eof_show_mouse(NULL);
 	eof_cursor_visible = 1;
 	eof_pen_visible = 1;
@@ -8257,7 +8253,6 @@ int eof_menu_file_multiple_array_txt_import(void)
 		if(!count)
 			allegro_message("No files were imported.");
 	}
-	eof_reset_lyric_preview_lines();
 	eof_show_mouse(NULL);
 	eof_cursor_visible = 1;
 	eof_pen_visible = 1;

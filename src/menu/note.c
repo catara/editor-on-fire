@@ -2564,7 +2564,6 @@ int eof_menu_note_delete_logic(int delete_fhps)
 	}
 	(void) eof_menu_edit_deselect_all();	//Clear selection data
 	eof_track_fixup_notes(eof_song, eof_selected_track, 0);
-	eof_reset_lyric_preview_lines();
 	(void) eof_detect_difficulties(eof_song, eof_selected_track);
 	eof_determine_phrase_status(eof_song, eof_selected_track);
 
@@ -5472,7 +5471,6 @@ int eof_menu_lyric_line_mark(void)
 		return 1;	//Do not allow marking lyric lines in HARM3, which is against Rock Band authoring style
 
 	retval = eof_menu_section_mark(EOF_LYRIC_PHRASE_SECTION);
-	eof_reset_lyric_preview_lines();
 
 	///DEBUG
 	eof_check_and_log_lyric_line_errors(eof_song, 0);
@@ -5511,7 +5509,6 @@ int eof_menu_lyric_line_unmark_logic(int make_undo)
 			}
 		}
 	}
-	eof_reset_lyric_preview_lines();
 	if(note_selection_updated)
 	{	//If the note selection was originally empty and was dynamically updated
 		(void) eof_menu_edit_deselect_all();	//Clear the note selection
@@ -5536,7 +5533,6 @@ int eof_menu_lyric_line_erase_all(void)
 	{
 		eof_prepare_undo(EOF_UNDO_TYPE_NONE);
 		eof_song->vocal_track[tracknum]->lines = 0;
-		eof_reset_lyric_preview_lines();
 	}
 	return 1;
 }
@@ -6153,7 +6149,6 @@ int eof_new_lyric_dialog(void)
 			eof_enforce_lyric_gap_multiplier(eof_song, eof_selected_track, nextlyric);	//Enforce the variable note gap on the new lyric (if placed too close before another lyric), if appropriate
 		}
 		(void) eof_detect_difficulties(eof_song, eof_selected_track);
-		eof_reset_lyric_preview_lines();
 
 		(void) snprintf(eof_log_string, sizeof(eof_log_string) - 1, "\tAdded lyric:  %s", (eof_pen_lyric.note == EOF_LYRIC_PERCUSSION) ? "(percussion)" : eof_etext);
 		eof_log(eof_log_string, 1);
@@ -13337,7 +13332,6 @@ int eof_menu_note_split_lyric_line_after_selected(void)
 	if(undo_made)
 	{	//If any lyric lines were modified
 		eof_sort_and_merge_overlapping_sections(tp->line, &tp->lines);	//Sort and remove overlapping instances
-		eof_reset_lyric_preview_lines();
 
 		///DEBUG
 		eof_check_and_log_lyric_line_errors(eof_song, 0);
