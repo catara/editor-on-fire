@@ -1,8 +1,8 @@
 # Editor on Fire (EOF) — Apple Silicon macOS Build & Rocksmith UI Fork
 
 - **Authors:** gemini 3.1 & catara
-- **Current Version:** `v0.1.1.20261124-1541` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
-- **Last Built:** 2026-11-24 15:41 CET
+- **Current Version:** `v0.1.1.20261124-1542` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
+- **Last Built:** 2026-11-24 15:42 CET
 - **Target Platform:** Apple Silicon Macs (M1/M2/M3/M4+) running **macOS 27.2.x** (plus portable `linux/amd64` Docker + XQuartz build)
 - **Upstream Base:** `raynebc/editor-on-fire` (`rc16`) + `NewCreature/Allegro-Legacy` + `Allegro 5`
 
@@ -48,3 +48,4 @@ open ~/Desktop/EOF-XQuartz.app
 | :--- | :--- | :--- | :--- |
 | `v0.1.1.20261122-1228` | 2026-11-22 12:28 CET | `arm64` Cocoa & `amd64` XQuartz | Initial version-tracked release with 8-button Rocksmith toolbar (`Lead`, `Bass`, `Rhy`, `BonG`, `BonB`, `Voc`, `+Tone`, `Import`), content indicators, and automated build scripts. |
 | `v0.1.1.20261124-1541` | 2026-11-24 15:41 CET | `arm64` Cocoa | Added 15-button 2-row toolbar (`FHP`, `SwapPR`, `Props`), 29-field `CDLC Meta...` dialog w/ `Paste`, `eof.cfg` persistence, auto-reload last song & `PART REAL_BASS` startup |
+| `v0.1.1.20261124-1542` | 2026-11-24 15:42 CET | `arm64` Cocoa | Verified all `[BEGIN gemini&catara]` comments across all modified source files, 15-button toolbar (`y<=27`), 29-field `CDLC Meta...` dialog w/ `Paste`, `eof.cfg` persistence & auto-load |

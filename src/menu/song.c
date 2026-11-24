@@ -401,7 +401,9 @@ DIALOG eof_song_properties_dialog[] =
 	{ d_agup_check_proc,   160, 331, 200, 16,  0,   0,   0,    0,      1,   0,   "Use accurate time signatures", NULL, NULL },
 	{ d_agup_check_proc,   160, 346, 206, 16,  0,   0,   0,    0,      1,   0,   "FoFLC export w/o pitch shifts", NULL, NULL },
 	{ d_agup_button_proc,  380, 315, 84,  24,  0,   0,   '\r', D_EXIT, 0,   0,   "OK",                   NULL, NULL },
+	// [BEGIN gemini&catara | 2026-11-24 15:42 CET] CDLC Meta button in Song Properties
 	{ d_agup_push_proc,    380, 280, 84,  26,  0,   0,   0,      0,      0,   0,   "CDLC Meta...",         NULL, (void *)eof_menu_cdlc_metadata },
+	// [END gemini&catara | 2026-11-24 15:42 CET]
 	{ NULL,                0,   0,   0,   0,   0,   0,   0,    0,      0,   0,   NULL,                   NULL, NULL }
 };
 
