@@ -3479,7 +3479,7 @@ void eof_render_lyric_preview(BITMAP * bp)
 		if(vp->line[x].start_pos > EOF_SEEK_POS)
 			break;		//If this lyric line and all remaining lyric lines begin after the seek position, stop looking for the line in effect at the seek position
 		if(vp->line[x].difficulty != line_set)
-			continue;	//If this lyric line isn't in the applicable vocal set
+			continue;	//If this lyric line isn't in the applicable vocal set, skip it
 		if(vp->line[x].end_pos >= EOF_SEEK_POS)
 		{	//If the seek position is within this lyric line
 			previews[0] = &vp->line[x];	//This is the first preview line
@@ -3491,13 +3491,13 @@ void eof_render_lyric_preview(BITMAP * bp)
 //Find first lyric line starting AFTER the seek position
 	for(; x < vp->lines; x++)
 	{	//For each of the remaining lyric lines that weren't checked in the above loop
-		if(eof_note_type_v == 3)
-		{	//Special case:  HARM3 uses HARM2's lyric lines, which may include lines whose timestamps don't contain lyrics in HARM3
-			if(!eof_time_range_is_populated(eof_song, EOF_TRACK_VOCALS, vp->line[x].start_pos, vp->line[x].end_pos, eof_note_type_v))
-				continue;	//If that turns out to be the case, skip this line so that only a lyric line populated with lyrics from HARM3 will be reflected in the preview
-		}
 		if(vp->line[x].difficulty == line_set)
 		{	//If this lyric line is in the applicable vocal set
+			if(eof_note_type_v == 3)
+			{	//Special case:  HARM3 uses HARM2's lyric lines, which may include lines whose timestamps don't contain lyrics in HARM3
+				if(!eof_time_range_is_populated(eof_song, EOF_TRACK_VOCALS, vp->line[x].start_pos, vp->line[x].end_pos, eof_note_type_v))
+					continue;	//If that turns out to be the case, skip this line so that only a lyric line populated with lyrics from HARM3 will be reflected in the preview
+			}
 			previews[1] = &vp->line[x];	//This is the second preview line
 			break;
 		}
