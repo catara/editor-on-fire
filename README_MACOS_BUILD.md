@@ -2,7 +2,7 @@
 
 - **Authors:** gemini 3.1 & catara
 - **Fork Repository:** `https://github.com` (forked from `raynebc/editor-on-fire` `rc16`)
-- **Current Version:** `v0.1.15.20261125-2222` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
+- **Current Version:** `v0.1.16.20261125-2226` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
 - **Last Updated:** 2026-11-25 22:22 CET
 - **Target Platform:** Apple Silicon Macs (M1/M2/M3/M4+) running **macOS 27.2.x** (plus portable `linux/amd64` Docker + XQuartz build)
 - **Dependencies:** `NewCreature/Allegro-Legacy` + `Allegro 5` + `alogg` + `dylibbundler`
@@ -107,3 +107,4 @@ open ~/Desktop/EOF-XQuartz.app
 | `v0.1.3.20261124-1532` | 2026-11-24 15:32 CET | `arm64` Cocoa | **QoL:** Added 29-field `CDLC Meta...` dialog (`BasedOn*` text boxes + macOS `pbpaste` `Paste` buttons), `eof.cfg` persistence, auto-reload last song, and `PART REAL_BASS` + 1st difficulty startup. |
 | `v0.1.4.20261125-2026` | 2026-11-25 20:26 CET | `arm64` Cocoa | **QoL & Functional Fix:** Finalized single-row 15-button toolbar (`y=3..21`), synced `raynebc/editor-on-fire:master`, fixed `/tmp` `codesign` build path, and exported all 45 keys to `cdlc_meta.ini`. |
 | `v0.1.15.20261125-2222` | 2026-11-25 22:22 CET | `arm64` Cocoa | **Functional Fixes:** Fixed macOS `Play`/`Seek Start`/`Seek End` transport buttons (`transport_btn_down`), reduced idle CPU from 156% to ~5% (`al_rest` + input-aware redraws), and separated QoL vs. Functional Fixes in `README_MACOS_BUILD.md`. |
+| `v0.1.16.20261125-2226` | 2026-11-25 22:26 | Automated build | Compiled via build script |
