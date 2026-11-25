@@ -2,7 +2,7 @@
 
 - **Authors:** gemini 3.1 & catara
 - **Fork Repository:** `https://github.com` (forked from `raynebc/editor-on-fire` `rc16`)
-- **Current Version:** `v0.1.4.20261125-2026` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
+- **Current Version:** `v0.1.5.20261125-2034` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
 - **Last Updated:** 2026-11-25 20:26 CET
 - **Target Platform:** Apple Silicon Macs (M1/M2/M3/M4+) running **macOS 27.2.x** (plus portable `linux/amd64` Docker + XQuartz build)
 - **Dependencies:** `NewCreature/Allegro-Legacy` + `Allegro 5` + `alogg` + `dylibbundler`
@@ -94,3 +94,4 @@ open ~/Desktop/EOF-XQuartz.app
 | `v0.1.2.20261122-1404` | 2026-11-22 14:04 CET | `arm64` Cocoa | Fixed `SIGBUS` startup/menu crash by raising `EOF_MAX_MENU_ITEMS` (`1024` -> `8192`) with `calloc` + bounds checks; added fork info to `Help > About`. |
 | `v0.1.3.20261124-1532` | 2026-11-24 15:32 CET | `arm64` Cocoa | Added 29-field `CDLC Meta...` dialog (`BasedOn*` as text boxes + macOS `pbpaste` `Paste` buttons), `eof.cfg` persistence, auto-reload last song, and `PART REAL_BASS` + 1st difficulty startup. |
 | `v0.1.4.20261125-2026` | 2026-11-25 20:26 CET | `arm64` Cocoa | Finalized single-row full-height 15-button toolbar (`y=3..21`: `Lead`, `Bass`, `Rhy`, `BonG`, `BonB`, `Voc`, `+Tone`, `+Sect`, `FHP`, `Rest`, `Prev`, `Rate`, `Swap`, `Props`, `Imp`), synced upstream `raynebc/editor-on-fire:master`, and updated documentation. |
+| `v0.1.5.20261125-2034` | 2026-11-25 20:34 | Automated build | Compiled via build script |

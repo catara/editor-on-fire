@@ -41,7 +41,8 @@ EOF
 make -f makefile.legacy clean
 make -f makefile.legacy -j$(sysctl -n hw.ncpu)
 
-APP_OUT="$HOME/Desktop/EOF-Cocoa.app"
+FINAL_APP="$HOME/Desktop/EOF-Cocoa.app"
+APP_OUT="/tmp/EOF-Cocoa.app"
 # [BEGIN gemini&catara | 2026-11-25 17:14 CET] Persist eof.cfg across rebuilds
 CFG_KEEP="$HOME/Library/Application Support/EOF/eof.cfg"
 mkdir -p "$(dirname "$CFG_KEEP")"
@@ -60,7 +61,10 @@ cp /opt/homebrew/bin/lame /opt/homebrew/bin/oggenc "$APP_OUT/Contents/Resources/
 cp ~/editor-on-fire/bin/rocksmith.panel.txt "$APP_OUT/Contents/Resources/eof/" 2>/dev/null || true
 cp /Applications/Rocksmith/EOF.app/Contents/Resources/eof/rocksmith.panel.txt /Applications/Rocksmith/EOF.app/Contents/Resources/eof/eof.cfg /Applications/Rocksmith/EOF.app/Contents/Resources/eof/oggCat "$APP_OUT/Contents/Resources/eof/" 2>/dev/null || true
 xattr -cr "$APP_OUT"
+xattr -cr "$APP_OUT"
 codesign --force --deep --sign - "$APP_OUT"
+rm -rf "$FINAL_APP"
+mv "$APP_OUT" "$FINAL_APP"
 echo "Built: $APP_OUT"
 
 # [BEGIN gemini&catara | Auto-increment version v0.1.<counter>.<timestamp> in README_MACOS_BUILD.md]
@@ -88,7 +92,7 @@ if os.path.exists(hf):
     heol = b"\r\n" if b"\r\n" in hraw else b"\n"
     hstr = hraw.decode("latin1").replace("\r\n", "\n")
     d_only = datetime.datetime.now().strftime("%Y-%m-%d")
-    hstr = re.sub(r"as of [0-9-]+ \(Catara's fork v0\.1\.\d+\)", f"as of {d_only} (Catara's fork v0.1.{cnt})", hstr)
+    hstr = re.sub(r"as of [0-9-]+ \(Catara\x27s fork v0\.1\.\d+\)", f"as of {d_only} (Catara\x27s fork v0.1.{cnt})", hstr)
     open(hf, "wb").write(hstr.replace("\n", "\r\n" if heol == b"\r\n" else "\n").encode("latin1"))
 print(f"Updated README_MACOS_BUILD.md -> {ver}")
 '
