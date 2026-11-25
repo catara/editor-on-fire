@@ -42,13 +42,16 @@ make -f makefile.legacy clean
 make -f makefile.legacy -j$(sysctl -n hw.ncpu)
 
 APP_OUT="$HOME/Desktop/EOF-Cocoa.app"
+# [BEGIN gemini&catara | 2026-11-25 17:14 CET] Persist eof.cfg across rebuilds
 CFG_KEEP="$HOME/Library/Application Support/EOF/eof.cfg"
 mkdir -p "$(dirname "$CFG_KEEP")"
 [ -f "$APP_OUT/Contents/Resources/eof/eof.cfg" ] && cp "$APP_OUT/Contents/Resources/eof/eof.cfg" "$CFG_KEEP"
 rm -rf "$APP_OUT"
 mv ~/EOF.app "$APP_OUT"
 mkdir -p "$APP_OUT/Contents/libs"
+# [BEGIN gemini&catara | 2026-11-25 17:14 CET] Restore persisted eof.cfg
 [ -f "$CFG_KEEP" ] && cp "$CFG_KEEP" "$APP_OUT/Contents/Resources/eof/eof.cfg"
+# [END gemini&catara | 2026-11-25 17:14 CET]
 xattr -cr "$APP_OUT"
 xattr -cr "$APP_OUT"
 xattr -cr "$APP_OUT"
