@@ -2513,10 +2513,14 @@ int eof_menu_file_exit(void)
 	eof_pen_visible = 0;
 	eof_render();
 	eof_clear_input();
+	// [BEGIN gemini&catara | 2026-11-25 23:08 CET] Skip eof_reset_display() on macOS Cocoa so NSCursor tracking rect isn't destroyed on exit prompt
+	#if !defined(ALLEGRO_MACOSX) && !defined(ALLEGRO_LEGACY)
 	if(!eof_dont_redraw_on_exit_prompt)
 	{	//If the user didn't disable the redrawing of the program window on exit prompt
 		(void) eof_reset_display();
 	}
+	#endif
+	// [END gemini&catara | 2026-11-25 23:08 CET]
 
 	//Re-initialize the notes panel if it was destroyed when the program window was redrawn
 	if(eof_enable_notes_panel)
