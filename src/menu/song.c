@@ -291,6 +291,22 @@ static void eof_cdlc_meta_rw(DIALOG *dlg, int save) {
 		set_config_string("CDLC", "Songtitle", eof_etext);
 		set_config_string("CDLC", "Artist", eof_etext2);
 		set_config_string("CDLC", "Album", eof_etext8);
+		set_config_string("SongProperties", "Songtitle", eof_etext);
+		set_config_string("SongProperties", "Artist", eof_etext2);
+		set_config_string("SongProperties", "Charter", eof_etext3);
+		set_config_string("SongProperties", "Album", eof_etext8);
+		set_config_string("SongProperties", "Genre", eof_etext9);
+		set_config_string("SongProperties", "TrackNumber", eof_etext10);
+		set_config_string("SongProperties", "Delay", eof_etext4);
+		set_config_string("SongProperties", "Year", eof_etext5);
+		set_config_string("SongProperties", "Difficulty", eof_etext7);
+		set_config_string("SongProperties", "LoadingText", eof_etext6);
+		set_config_int("SongProperties", "Lyrics", (eof_song_properties_dialog[23].flags & D_SELECTED) ? 1 : 0);
+		set_config_int("SongProperties", "EighthNoteHOPO", (eof_song_properties_dialog[24].flags & D_SELECTED) ? 1 : 0);
+		set_config_int("SongProperties", "FretHandPos1_PG", (eof_song_properties_dialog[25].flags & D_SELECTED) ? 1 : 0);
+		set_config_int("SongProperties", "FretHandPos1_PB", (eof_song_properties_dialog[26].flags & D_SELECTED) ? 1 : 0);
+		set_config_int("SongProperties", "AccurateTS", (eof_song_properties_dialog[27].flags & D_SELECTED) ? 1 : 0);
+		set_config_int("SongProperties", "FoFLCExportWithoutPitchShifts", (eof_song_properties_dialog[28].flags & D_SELECTED) ? 1 : 0);
 		flush_config_file();
 	}
 	pop_config_state();
@@ -336,7 +352,7 @@ DIALOG eof_cdlc_metadata_dialog[] = {
 	{ d_agup_text_proc, 12, 282, 96, 12, 0, 0, 0, 0, 0, 0, "ToneDetails", NULL, NULL },
 	{ eof_edit_proc, 112, 278, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[12], NULL, NULL },
 	{ d_agup_push_proc, 386, 278, 44, 18, 0, 0, 0, 0, 12, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
-	{ d_agup_text_proc, 12, 303, 96, 12, 0, 0, 0, 0, 0, 0, "SaveRemotelyPath", NULL, NULL },
+	{ d_agup_text_proc, 8, 303, 104, 12, 0, 0, 0, 0, 0, 0, "SaveRemotelyPath", NULL, NULL },
 	{ eof_edit_proc, 112, 299, 270, 18, 0, 0, 0, 0, 510, 0, cdlc_tbufs[13], NULL, NULL },
 	{ d_agup_push_proc, 386, 299, 44, 18, 0, 0, 0, 0, 13, 0, "Paste", NULL, (void *)eof_cdlc_paste_btn },
 	{ d_agup_text_proc, 12, 324, 96, 12, 0, 0, 0, 0, 0, 0, "PackageDate", NULL, NULL },
@@ -359,13 +375,14 @@ DIALOG eof_cdlc_metadata_dialog[] = {
 	{ d_agup_check_proc, 444, 136, 224, 16, 0, 0, 0, 0, 1, 0, "NOTProductionReady", NULL, NULL },
 	{ d_agup_check_proc, 444, 158, 224, 16, 0, 0, 0, 0, 1, 0, "Has_AIUsedForGeneration", NULL, NULL },
 	{ d_agup_check_proc, 444, 180, 224, 16, 0, 0, 0, 0, 1, 0, "Is_AIFullyGenerated", NULL, NULL },
-	{ d_agup_text_proc, 444, 220, 224, 28, 0, 0, 0, 0, 0, 0, "Songtitle, Artist & Album sync with Song Properties", NULL, NULL },
+	{ d_agup_text_proc, 444, 218, 224, 14, 0, 0, 0, 0, 0, 0, "Songtitle, Artist, Album", NULL, NULL },
+	{ d_agup_text_proc, 444, 234, 224, 14, 0, 0, 0, 0, 0, 0, "auto-sync on Save", NULL, NULL },
 	{ d_agup_button_proc, 450, 416, 95, 28, 0, 0, 13, D_EXIT, 0, 0, "Save", NULL, NULL },
 	{ d_agup_button_proc, 558, 416, 95, 28, 0, 0, 0, D_EXIT, 0, 0, "Cancel", NULL, NULL },
 	{ NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL }
 };
 
-int eof_menu_cdlc_metadata(DIALOG *d) { (void)d; eof_cdlc_meta_rw(eof_cdlc_metadata_dialog, 0); eof_color_dialog(eof_cdlc_metadata_dialog, gui_fg_color, gui_bg_color); eof_conditionally_center_dialog(eof_cdlc_metadata_dialog); if(eof_popup_dialog(eof_cdlc_metadata_dialog, 2) == 64) eof_cdlc_meta_rw(eof_cdlc_metadata_dialog, 1); return D_REDRAW; }
+int eof_menu_cdlc_metadata(DIALOG *d) { (void)d; eof_cdlc_meta_rw(eof_cdlc_metadata_dialog, 0); eof_color_dialog(eof_cdlc_metadata_dialog, gui_fg_color, gui_bg_color); eof_conditionally_center_dialog(eof_cdlc_metadata_dialog); if(eof_popup_dialog(eof_cdlc_metadata_dialog, 2) == 65) eof_cdlc_meta_rw(eof_cdlc_metadata_dialog, 1); return D_REDRAW; }
 // [END gemini&catara | 2026-11-24 13:52 CET]
 
 DIALOG eof_song_properties_dialog[] =
