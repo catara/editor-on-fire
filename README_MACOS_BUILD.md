@@ -2,7 +2,7 @@
 
 - **Authors:** gemini 3.1 & catara
 - **Fork Repository:** `https://github.com` (forked from `raynebc/editor-on-fire` `rc16`)
-- **Current Version:** `v0.1.22.20261125-2255` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
+- **Current Version:** `v0.1.23.20261125-2304` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
 - **Last Updated:** 2026-11-25 22:22 CET
 - **Target Platform:** Apple Silicon Macs (M1/M2/M3/M4+) running **macOS 27.2.x** (plus portable `linux/amd64` Docker + XQuartz build)
 - **Dependencies:** `NewCreature/Allegro-Legacy` + `Allegro 5` + `alogg` + `dylibbundler`
@@ -61,6 +61,10 @@
 4. **macOS `codesign` & `dylibbundler` Provenance Detritus Fix (`build_eof_cocoa.sh`)**
    - Assembles, runs `dylibbundler`, strips extended attributes (`xattr -cr`), and ad-hoc signs inside `/tmp/EOF-Cocoa.app` before moving to `~/Desktop/EOF-Cocoa.app`, preventing macOS Desktop `com.apple.provenance` xattrs from breaking `codesign`.
 
+5. **Missing Cursor After Canceling Exit Prompt (`No` / `Esc`) on macOS (`src/menu/file.c`)**
+   - `eof_menu_file_exit()` recreates the Cocoa OpenGL display via `eof_reset_display()` before showing the `"Want to Quit?"` prompt and called `eof_show_mouse(NULL)` on cancel without re-enabling the macOS hardware cursor.
+   - Added `show_os_cursor(2)` when `!eof_soft_cursor` after canceling exit so the pointer remains visible immediately without needing `Cmd + Tab`.
+
 ---
 
 ## How to Compile
@@ -114,3 +118,4 @@ open ~/Desktop/EOF-XQuartz.app
 | `v0.1.20.20261125-2244` | 2026-11-25 22:44 | Automated build | Compiled via build script |
 | `v0.1.21.20261125-2249` | 2026-11-25 22:49 | Automated build | Compiled via build script |
 | `v0.1.22.20261125-2255` | 2026-11-25 22:55 | Automated build | Compiled via build script |
+| `v0.1.23.20261125-2304` | 2026-11-25 23:04 | Automated build | Compiled via build script |

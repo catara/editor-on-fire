@@ -2553,6 +2553,13 @@ int eof_menu_file_exit(void)
 
 	eof_close_button_clicked = 0;	//User either canceled the close or eof_quit has been set
 	eof_show_mouse(NULL);
+	// [BEGIN gemini&catara | 2026-11-25 23:03 CET] Restore macOS hardware cursor after eof_reset_display() when exit is canceled
+	if(!eof_soft_cursor)
+	{
+		if(show_os_cursor(2) < 0)
+			eof_soft_cursor = 1;
+	}
+	// [END gemini&catara | 2026-11-25 23:03 CET]
 	eof_cursor_visible = 1;
 	eof_pen_visible = 1;
 
