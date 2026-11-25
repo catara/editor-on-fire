@@ -2372,17 +2372,30 @@ int eof_menu_song_add_silence(void)
 	{
 		eof_leading_silence_dialog[x].flags = 0;
 	}
-	eof_leading_silence_dialog[2].flags = D_SELECTED;
-	eof_leading_silence_dialog[3].flags = 0;
-	eof_leading_silence_dialog[5].flags = 0;
-	eof_leading_silence_dialog[6].flags = 0;
-	(void) snprintf(eof_etext, sizeof(eof_etext) - 1, "0");
-
-	(void) snprintf(eof_etext2, sizeof(eof_etext2) - 1, "-> 0ms");		//These are used by the callback functions to display the amount of leading silence that will be added
-	eof_leading_silence_dialog_amount = 0;
+	// [BEGIN gemini&catara | 2026-11-25 23:50 CET] Load Leading Silence mode & amount from eof.cfg (default: Pad: Milliseconds + 4000 ms)
+	{
+		int def_radio = get_config_int("eof", "eof_leading_silence_radio", 5);
+		int def_amt = get_config_int("eof", "eof_leading_silence_amount", 4000);
+		if(def_radio != 2 && def_radio != 3 && def_radio != 5 && def_radio != 6) def_radio = 5;
+		eof_leading_silence_dialog[2].flags = (def_radio == 2) ? D_SELECTED : 0;
+		eof_leading_silence_dialog[3].flags = (def_radio == 3) ? D_SELECTED : 0;
+		eof_leading_silence_dialog[5].flags = (def_radio == 5) ? D_SELECTED : 0;
+		eof_leading_silence_dialog[6].flags = (def_radio == 6) ? D_SELECTED : 0;
+		(void) snprintf(eof_etext, sizeof(eof_etext) - 1, "%d", def_amt);
+	}
+	eof_leading_silence_dialog_amount = eof_evaluate_leading_silence_dialog();
+	(void) snprintf(eof_etext2, sizeof(eof_etext2) - 1, "-> %lums", (eof_leading_silence_dialog_amount == ULONG_MAX) ? 0 : eof_leading_silence_dialog_amount);
+	// [END gemini&catara | 2026-11-25 23:50 CET]
 
 	if(eof_popup_dialog(eof_leading_silence_dialog, 7) == 13)
 	{	//User clicked OK
+		// [BEGIN gemini&catara | 2026-11-25 23:50 CET] Persist chosen Leading Silence mode & amount in eof.cfg
+		{
+			int sel_radio = (eof_leading_silence_dialog[2].flags & D_SELECTED) ? 2 : (eof_leading_silence_dialog[3].flags & D_SELECTED) ? 3 : (eof_leading_silence_dialog[6].flags & D_SELECTED) ? 6 : 5;
+			set_config_int("eof", "eof_leading_silence_radio", sel_radio);
+			set_config_int("eof", "eof_leading_silence_amount", atoi(eof_etext));
+		}
+		// [END gemini&catara | 2026-11-25 23:50 CET]
 		(void) eof_menu_edit_cut(0, 1);	//Save auto-adjust data for the entire chart
 		eof_delete_rocksmith_wav();		//Delete the Rocksmith WAV file since changing silence will require a new WAV file to be written
 
