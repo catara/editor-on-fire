@@ -232,18 +232,31 @@ unsigned short *eof_ini_dialog_count = NULL;			//Used to point to the counter tr
 static const char eof_ini_reference_text[] =
 	"Valid song.ini keys -> UI labels:\n"
 	"----------------------------------\n"
-	"frettist     = Charter (Author)\n"
-	"name         = Song Title\n"
-	"artist       = Artist\n"
-	"album        = Album\n"
-	"genre        = Genre\n"
-	"year         = Year\n"
-	"track        = Track #\n"
-	"delay        = Delay (ms)\n"
-	"loading_text = Song Comment / Loading\n"
-	"diff_band    = Diff. (0-6)\n"
-	"lyrics       = Lyrics (0/1)\n"
-	"eighth_note_hopo = 8th Note HO/PO";
+	"frets / charter  = Charter (Author)\n"
+	"name             = Song Title\n"
+	"artist           = Artist\n"
+	"album            = Album\n"
+	"genre            = Genre\n"
+	"year             = Year\n"
+	"track            = Track #\n"
+	"delay            = Delay (ms)\n"
+	"loading_phrase   = Song Comment/Loading\n"
+	"diff_band        = Band Diff. (0-6)\n"
+	"diff_guitar      = Lead Guitar Diff.\n"
+	"diff_bass        = Bass Diff.\n"
+	"diff_rhythm      = Rhythm Diff.\n"
+	"diff_drums       = Drums Diff.\n"
+	"diff_drums_real  = Pro Drums Diff.\n"
+	"diff_vocals      = Vocals Diff.\n"
+	"diff_vocals_harm = Harmony Diff.\n"
+	"diff_keys        = Keys Diff.\n"
+	"diff_bass_real   = Pro Bass (17) Diff.\n"
+	"diff_guitar_real = Pro Guitar (17) Diff.\n"
+	"diff_bass_real_22= Pro Bass (22) Diff.\n"
+	"diff_guitar_real_22= Pro Guitar (22)\n"
+	"lyrics           = Lyrics (1/0)\n"
+	"eighthnote_hopo  = 8th Note HO/PO (1/0)\n"
+	"Note: Applies to NEW songs (File>New).";
 
 static int eof_props_paste_btn(DIALOG *d) {
 	char *dst = (char *)d->dp2;
@@ -261,14 +274,14 @@ static int eof_props_paste_btn(DIALOG *d) {
 DIALOG eof_ini_dialog[] =
 {
 	/* (proc)             (x)  (y)  (w)  (h)  (fg) (bg) (key) (flags) (d1) (d2) (dp)                 (dp2) (dp3) */
-	{ eof_window_proc, 0,   48,  590, 232, 2,   23,  0,    0,      0,   0,   eof_etext2,          NULL, NULL },
+	{ eof_window_proc, 0,   48,  630, 310, 2,   23,  0,    0,      0,   0,   eof_etext2,          NULL, NULL },
 	{ d_agup_list_proc,   12,  84,  240, 138, 2,   23,  0,    0,      0,   0,   (void *)eof_ini_list,NULL, NULL },
 	{ d_agup_push_proc,   264, 84,  68,  28,  2,   23,  'a',  D_EXIT, 0,   0,   "&Add",              NULL, (void *)eof_ini_dialog_add },
 	{ d_agup_push_proc,   264, 124,  68,  28,  2,   23,  'e',  D_EXIT, 0,   0,   "&Edit",              NULL, (void *)eof_ini_dialog_edit },
 	{ d_agup_push_proc,   264, 164, 68,  28,  2,   23,  'l',  D_EXIT, 0,   0,   "De&lete",           NULL, (void *)eof_ini_dialog_delete },
 	{ d_agup_button_proc, 12,  235, 240, 28,  2,   23,  '\r', D_EXIT, 0,   0,   "Done",              NULL, NULL },
 	// [BEGIN gemini&catara | 2026-11-25 22:32 CET] INI key reference box
-	{ d_agup_textbox_proc,344, 84,  234, 179, 2,   23,  0,    0,      0,   0,   (void *)eof_ini_reference_text, NULL, NULL },
+	{ d_agup_textbox_proc,344, 84,  274, 258, 2,   23,  0,    0,      0,   0,   (void *)eof_ini_reference_text, NULL, NULL },
 	// [END gemini&catara | 2026-11-25 22:32 CET]
 	{ NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL }
 };
