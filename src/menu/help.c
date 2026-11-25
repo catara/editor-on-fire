@@ -242,7 +242,7 @@ int eof_menu_help_about(void)
 	eof_pen_visible = 0;
 	eof_render();
 	// [BEGIN gemini&catara | 2026-11-22 13:41 CET] Display Catara fork & upstream raynebc base details in About dialog
-	(void) alert(EOF_VERSION_STRING, "Forked from raynebc/editor-on-fire main as of 2026-11-25 (Catara's fork v0.1.10)", EOF_COPYRIGHT_STRING, "Okay", NULL, KEY_ENTER, 0);
+	(void) alert(EOF_VERSION_STRING, "Forked from raynebc/editor-on-fire main as of 2026-11-25 (Catara's fork v0.1.11)", EOF_COPYRIGHT_STRING, "Okay", NULL, KEY_ENTER, 0);
 	// [END gemini&catara | 2026-11-22 13:41 CET]
 	eof_clear_input();
 	eof_show_mouse(NULL);

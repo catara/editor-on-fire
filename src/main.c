@@ -6390,6 +6390,10 @@ int main(int argc, char * argv[])
 		{	//Chart is paused
 			#ifndef ALLEGRO_LEGACY
 				eof_idle_logic();
+			#else
+				// [BEGIN gemini&catara | 2026-11-25 22:05 CET] Yield 8ms when paused on macOS Allegro-Legacy to prevent 150%+ idle CPU spin
+				al_rest(0.008);
+				// [END gemini&catara | 2026-11-25 22:05 CET]
 			#endif
 		}//Chart is paused
 	}//While EOF isn't meant to quit
