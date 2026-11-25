@@ -4543,7 +4543,7 @@ void eof_editor_drum_logic(void)
 	}
 }
 
-// [BEGIN gemini&catara | 2026-11-26 00:18 CET] One-click Rocksmith Default Tones across active Pro Guitar/Bass tracks
+// [BEGIN gemini&catara | 2026-11-26 00:24 CET] One-click Rocksmith Default Tones across active Pro Guitar/Bass tracks
 static void eof_add_or_replace_rs_tone(EOF_PRO_GUITAR_TRACK *tp, unsigned long pos, const char *name, unsigned long is_def)
 {
 	unsigned long i;
@@ -4555,7 +4555,7 @@ static void eof_add_or_replace_rs_tone(EOF_PRO_GUITAR_TRACK *tp, unsigned long p
 			tp->tonechange[i].start_pos = pos;
 			tp->tonechange[i].end_pos = is_def;
 			strncpy(tp->tonechange[i].name, name, sizeof(tp->tonechange[i].name) - 1);
-			tp->tonechange[i].name[sizeof(tp->tonechange.name) - 1] = 0;
+			tp->tonechange[i].name[sizeof(tp->tonechange[0].name) - 1] = 0;
 			return;
 		}
 	}
@@ -4564,14 +4564,14 @@ static void eof_add_or_replace_rs_tone(EOF_PRO_GUITAR_TRACK *tp, unsigned long p
 		tp->tonechange[tp->tonechanges].start_pos = pos;
 		tp->tonechange[tp->tonechanges].end_pos = is_def;
 		strncpy(tp->tonechange[tp->tonechanges].name, name, sizeof(tp->tonechange[tp->tonechanges].name) - 1);
-		tp->tonechange[tp->tonechanges].name[sizeof(tp->tonechange.name) - 1] = 0;
+		tp->tonechange[tp->tonechanges].name[sizeof(tp->tonechange[0].name) - 1] = 0;
 		tp->tonechanges++;
 	}
 }
 
 static void eof_apply_default_rs_tones(void)
 {
-	int trs[4] = {EOF_TRACK_REAL_GUITAR, EOF_TRACK_REAL_BASS, EOF_TRACK_REAL_GUITAR_22, EOF_TRACK_REAL_BASS_22};
+	int trs[4] = {9, 8, 14, 11};
 	const char *def_gtr = get_config_string("rocksmith_tones", "default_guitar", "Default_Guitar");
 	const char *def_bass = get_config_string("rocksmith_tones", "default_bass", "Default_Bass");
 	const char *lead_tone = get_config_string("rocksmith_tones", "lead_tone", "Guitar_Lead");
@@ -4584,23 +4584,25 @@ static void eof_apply_default_rs_tones(void)
 	{
 		int tr = trs[t];
 		EOF_PRO_GUITAR_TRACK *tp;
-		unsigned long n, first_pos = ULONG_MAX, pre_pos, pad_end = 0;
-		int is_bass = (tr == EOF_TRACK_REAL_BASS || tr == EOF_TRACK_REAL_BASS_22);
+		unsigned long n, first_pos = ULONG_MAX, pre_pos, pad_end = 0, tnum;
+		int is_bass = (tr == 8 || tr == 11);
 		const char *start_tone = is_bass ? def_bass : def_gtr;
 		const char *main_tone;
 		if(tr >= (int)eof_song->tracks || !eof_song->track[tr]) continue;
-		tp = eof_song->track[tr]->pgtrack;
+		tnum = eof_song->track[tr]->tracknum;
+		if(tnum >= eof_song->pro_guitar_tracks) continue;
+		tp = eof_song->pro_guitar_track[tnum];
 		if(!tp || tp->notes == 0) continue;
 		for(n = 0; n < tp->notes; n++)
 		{
-			if(tp->pgnote[n] && tp->pgnote[n]->pos < first_pos)
-				first_pos = tp->pgnote[n]->pos;
+			if(tp->note[n] && tp->note[n]->pos < first_pos)
+				first_pos = tp->note[n]->pos;
 		}
 		if(first_pos == ULONG_MAX) continue;
 		if(eof_song->beats > 0 && eof_song->beat[0])
 			pad_end = eof_song->beat[0]->pos;
 		if(is_bass) main_tone = bass_tone;
-		else if(eof_song->track[tr]->arrangement == 2) main_tone = rhy_tone;
+		else if(tp->arrangement == 2) main_tone = rhy_tone;
 		else main_tone = lead_tone;
 
 		if(first_pos >= 500 && (pad_end == 0 || first_pos >= pad_end + 500)) pre_pos = first_pos - 500;
@@ -4615,7 +4617,7 @@ static void eof_apply_default_rs_tones(void)
 	}
 	eof_fix_window_title();
 }
-// [END gemini&catara | 2026-11-26 00:18 CET]
+// [END gemini&catara | 2026-11-26 00:24 CET]
 
 void eof_editor_logic(void)
 {
