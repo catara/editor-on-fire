@@ -66,6 +66,10 @@
    - `eof_menu_file_exit()` recreates the Cocoa OpenGL display via `eof_reset_display()` before showing the `"Want to Quit?"` prompt and called `eof_show_mouse(NULL)` on cancel without re-enabling the macOS hardware cursor.
    - Added `show_os_cursor(2)` when `!eof_soft_cursor` after canceling exit so the pointer remains visible immediately without needing `Cmd + Tab`.
 
+6. **Apple Silicon `oggenc` / `lame` Path Fix for Leading Silence & MP3 Import (`src/silence.c`, `src/main.c`)**
+   - Upstream EOF hardcoded Intel-Mac `/usr/local/bin/oggenc` and `/usr/local/bin/lame` paths, causing Leading Silence (`Re-encode`) and MP3 conversion to fail with `Error code 48` on Apple Silicon Macs where Homebrew uses `/opt/homebrew/bin`.
+   - Replaced hardcoded `/usr/local/bin/` tool paths with `PATH`-resolved `oggenc` / `lame` and prepended `Contents/Resources/eof:/opt/homebrew/bin:/usr/local/bin` to `PATH` at startup.
+
 ---
 
 ## How to Compile

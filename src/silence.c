@@ -476,7 +476,9 @@ int eof_add_silence_recode(char * oggfn, unsigned long ms)
 	#ifdef ALLEGRO_WINDOWS
 		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc2 -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
 	#elif defined ALLEGRO_MACOSX
+		// [BEGIN gemini&catara | 2026-11-25 23:40 CET] Use PATH-resolved oggenc instead of Intel-only /usr/local/bin/oggenc
 		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
+		// [END gemini&catara | 2026-11-25 23:40 CET]
 	#else
 		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
 	#endif
