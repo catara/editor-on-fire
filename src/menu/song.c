@@ -272,7 +272,7 @@ static int eof_cdlc_paste_btn(DIALOG *d) {
 	return D_REDRAW;
 }
 static void eof_cdlc_meta_rw(DIALOG *dlg, int save) {
-	char path;
+	char path[1024];
 	const char *tkeys[] = {"Version","CDLCID","txt_EoFPath","YBLink","BasedOnYB","BasedOnCF","BaseOnRB","BasedOn_GP","TabLinks","Spotify","Description","toDo","ToneDetails","SaveRemotelyPath","PackageDate","UpdateDate","PackageDetails","CF_Author"};
 	const char *ckeys[] = {"SaveInVerisonInfo","SaveInDB","SaveRemotely","Has_Slide","Has_Acoustic","NOTProductionReady","Has_AIUsedForGeneration","Is_AIFullyGenerated"};
 	int i;
