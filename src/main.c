@@ -6317,10 +6317,13 @@ int main(int argc, char * argv[])
 		#endif
 
 		/* update and draw the screen */
-		if(!updated)
+		// [BEGIN gemini&catara | 2026-11-25 22:08 CET] Throttle redundant OpenGL redraws while paused to keep idle CPU low
+		static unsigned idle_render_div = 0;
+		if(!updated && (!eof_music_paused || (++idle_render_div % 3 == 0)))
 		{
 			eof_render();
 			updated = 1;
+		// [END gemini&catara | 2026-11-25 22:08 CET]
 
 			#define EOF_FPS_SAMPLE_COUNT 10
 			eof_main_loop_ctr++;	//Count the number of calls to eof_render in this loop
@@ -6392,7 +6395,7 @@ int main(int argc, char * argv[])
 				eof_idle_logic();
 			#else
 				// [BEGIN gemini&catara | 2026-11-25 22:05 CET] Yield 8ms when paused on macOS Allegro-Legacy to prevent 150%+ idle CPU spin
-				al_rest(0.008);
+				al_rest(0.025);
 				// [END gemini&catara | 2026-11-25 22:05 CET]
 			#endif
 		}//Chart is paused
