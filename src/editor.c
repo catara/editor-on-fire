@@ -8344,6 +8344,15 @@ void eof_editor_logic_common(void)
 		}
 		else
 		{
+			// [BEGIN gemini&catara | 2026-11-25 22:19 CET] Allow transport button release even if macOS trackpad shifts slightly on mouse-up
+			if(!(mouse_b & 1) && !eof_blclick_released && eof_selected_control >= 0)
+			{
+				eof_blclick_released = 1;
+				if(eof_selected_control == 0) (void) eof_menu_song_seek_start();
+				else if(eof_selected_control == 2) eof_music_play(0);
+				else if(eof_selected_control == 4) (void) eof_menu_song_seek_end();
+			}
+			// [END gemini&catara | 2026-11-25 22:19 CET]
 			eof_selected_control = -1;
 		}
 	}
