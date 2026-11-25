@@ -23,6 +23,6 @@ MP3 decoding and OGG encoding capabilities will require LAME and Vorbis Tools to
 
 # catara's forked of EOF #
 
-Adding buttons for most common Rocksmith functions
-, to reduce menu dependecy
+Custom fork to add some quality of life tinny features (e.g. Compile latest version, On Mac as CustomForge linked one is out of date by almost a year; adding buttons for most common Rocksmith functions to reduce menu dependency)
+For details check https://github.com/catara/editor-on-fire/blob/master/README_MACOS_BUILD.md
 
