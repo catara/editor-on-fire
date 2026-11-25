@@ -257,8 +257,8 @@ DIALOG eof_ini_add_dialog[] =
 // [BEGIN gemini&catara | 2026-11-24 13:52 CET] CDLC & Fork Metadata dialog (18 text boxes w/ Paste + 8 checkboxes + 3 synced = 29 fields)
 static char cdlc_tbufs[18][512];
 static void eof_cdlc_meta_filepath(char *out, size_t sz) {
-	if(eof_song_path[0]) snprintf(out, sz, "%s/cdlc_meta.ini", eof_song_path);
-	else snprintf(out, sz, "cdlc_meta.ini");
+	if(eof_song_path[0]) snprintf(out, sz, "%s/cdlc.ini", eof_song_path);
+	else snprintf(out, sz, "cdlc.ini");
 }
 static int eof_cdlc_paste_btn(DIALOG *d) {
 	int idx = d->d1;
@@ -272,45 +272,40 @@ static int eof_cdlc_paste_btn(DIALOG *d) {
 	return D_REDRAW;
 }
 static void eof_cdlc_meta_rw(DIALOG *dlg, int save) {
-	char path[1024];
+	char path;
 	const char *tkeys[] = {"Version","CDLCID","txt_EoFPath","YBLink","BasedOnYB","BasedOnCF","BaseOnRB","BasedOn_GP","TabLinks","Spotify","Description","toDo","ToneDetails","SaveRemotelyPath","PackageDate","UpdateDate","PackageDetails","CF_Author"};
 	const char *ckeys[] = {"SaveInVerisonInfo","SaveInDB","SaveRemotely","Has_Slide","Has_Acoustic","NOTProductionReady","Has_AIUsedForGeneration","Is_AIFullyGenerated"};
 	int i;
 	eof_cdlc_meta_filepath(path, sizeof(path));
-	push_config_state();
-	set_config_file(path);
-	for(i = 0; i < 18; i++) {
-		if(save) set_config_string("CDLC", tkeys[i], cdlc_tbufs[i]);
-		else strncpy(cdlc_tbufs[i], get_config_string("CDLC", tkeys[i], i == 2 ? eof_filename : ""), 510);
+	if(!save) {
+		push_config_state();
+		set_config_file(path);
+		for(i = 0; i < 18; i++)
+			strncpy(cdlc_tbufs[i], get_config_string("CDLC", tkeys[i], i == 2 ? eof_filename : ""), 510);
+		for(i = 0; i < 8; i++)
+			dlg[55 + i].flags = get_config_int("CDLC", ckeys[i], 0) ? D_SELECTED : 0;
+		pop_config_state();
+	} else {
+		FILE *f = fopen(path, "w");
+		if(f) {
+			fprintf(f, "[CDLC]\n");
+			for(i = 0; i < 18; i++) fprintf(f, "%s=%s\n", tkeys[i], cdlc_tbufs[i]);
+			for(i = 0; i < 8; i++) fprintf(f, "%s=%d\n", ckeys[i], (dlg[55 + i].flags & D_SELECTED) ? 1 : 0);
+			fprintf(f, "Songtitle=%s\nArtist=%s\nAlbum=%s\n\n[SongProperties]\n", eof_etext, eof_etext2, eof_etext8);
+			fprintf(f, "Songtitle=%s\nArtist=%s\nCharter=%s\nAlbum=%s\nGenre=%s\n", eof_etext, eof_etext2, eof_etext3, eof_etext8, eof_etext9);
+			fprintf(f, "TrackNumber=%s\nDelay=%s\nYear=%s\nDifficulty=%s\nLoadingText=%s\n", eof_etext10, eof_etext4, eof_etext5, eof_etext7, eof_etext6);
+			fprintf(f, "Lyrics=%d\nEighthNoteHOPO=%d\nFretHandPos1_PG=%d\nFretHandPos1_PB=%d\nAccurateTS=%d\nFoFLCExportWithoutPitchShifts=%d\n",
+				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0,
+				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0,
+				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0,
+				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0,
+				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0,
+				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0);
+			fclose(f);
+		}
 	}
-	for(i = 0; i < 8; i++) {
-		if(save) set_config_int("CDLC", ckeys[i], (dlg[55 + i].flags & D_SELECTED) ? 1 : 0);
-		else dlg[55 + i].flags = get_config_int("CDLC", ckeys[i], 0) ? D_SELECTED : 0;
-	}
-	if(save) {
-		set_config_string("CDLC", "Songtitle", eof_etext);
-		set_config_string("CDLC", "Artist", eof_etext2);
-		set_config_string("CDLC", "Album", eof_etext8);
-		set_config_string("SongProperties", "Songtitle", eof_etext);
-		set_config_string("SongProperties", "Artist", eof_etext2);
-		set_config_string("SongProperties", "Charter", eof_etext3);
-		set_config_string("SongProperties", "Album", eof_etext8);
-		set_config_string("SongProperties", "Genre", eof_etext9);
-		set_config_string("SongProperties", "TrackNumber", eof_etext10);
-		set_config_string("SongProperties", "Delay", eof_etext4);
-		set_config_string("SongProperties", "Year", eof_etext5);
-		set_config_string("SongProperties", "Difficulty", eof_etext7);
-		set_config_string("SongProperties", "LoadingText", eof_etext6);
-		set_config_int("SongProperties", "Lyrics", (eof_song_properties_dialog[23].flags & D_SELECTED) ? 1 : 0);
-		set_config_int("SongProperties", "EighthNoteHOPO", (eof_song_properties_dialog[24].flags & D_SELECTED) ? 1 : 0);
-		set_config_int("SongProperties", "FretHandPos1_PG", (eof_song_properties_dialog[25].flags & D_SELECTED) ? 1 : 0);
-		set_config_int("SongProperties", "FretHandPos1_PB", (eof_song_properties_dialog[26].flags & D_SELECTED) ? 1 : 0);
-		set_config_int("SongProperties", "AccurateTS", (eof_song_properties_dialog[27].flags & D_SELECTED) ? 1 : 0);
-		set_config_int("SongProperties", "FoFLCExportWithoutPitchShifts", (eof_song_properties_dialog[28].flags & D_SELECTED) ? 1 : 0);
-		flush_config_file();
-	}
-	pop_config_state();
 }
+
 DIALOG eof_cdlc_metadata_dialog[] = {
 	{ eof_window_proc, 0, 0, 680, 460, 0, 0, 0, 0, 0, 0, "CDLC / Fork Properties (29 Fields)", NULL, NULL },
 	{ d_agup_text_proc, 12, 30, 96, 12, 0, 0, 0, 0, 0, 0, "Version", NULL, NULL },
