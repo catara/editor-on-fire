@@ -19,3 +19,10 @@ If you're using Linux or if you want to experiment with the source code yourself
 https://github.com/raynebc/editor-on-fire/tree/wiki
 
 MP3 decoding and OGG encoding capabilities will require LAME and Vorbis Tools to be installed manually, otherwise EOF will warn that applicable features are disabled.
+
+
+# catara's forked of EOF #
+
+Adding buttons for most common Rocksmith functions
+, to reduce menu dependecy
+
