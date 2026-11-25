@@ -50,3 +50,4 @@ src/*.bak
 src/makefile.legacy_config
 Dockerfile.eof
 .build_counter
+eof.cfg
