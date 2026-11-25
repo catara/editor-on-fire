@@ -227,7 +227,7 @@ int eof_add_silence(char * oggfn, unsigned long ms)
 	#ifdef ALLEGRO_WINDOWS
 		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc2 -o \"%s\" -b %d \"%s\"", soggfn, alogg_get_bitrate_ogg(eof_music_track) / 1000, wavfn);
 	#elif defined ALLEGRO_MACOSX
-		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "/usr/local/bin/oggenc -o \"%s\" -b %d \"%s\"", soggfn, alogg_get_bitrate_ogg(eof_music_track) / 1000, wavfn);
+		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -b %d \"%s\"", soggfn, alogg_get_bitrate_ogg(eof_music_track) / 1000, wavfn);
 	#else
 		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -b %d \"%s\"", soggfn, alogg_get_bitrate_ogg(eof_music_track) / 1000, wavfn);
 	#endif
@@ -476,7 +476,7 @@ int eof_add_silence_recode(char * oggfn, unsigned long ms)
 	#ifdef ALLEGRO_WINDOWS
 		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc2 -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
 	#elif defined ALLEGRO_MACOSX
-		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "/usr/local/bin/oggenc -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
+		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
 	#else
 		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
 	#endif
@@ -490,7 +490,7 @@ int eof_add_silence_recode(char * oggfn, unsigned long ms)
 		#ifdef ALLEGRO_WINDOWS
 			(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc2 -o \"%s\" -q 9 \"%s\"", soggfn, wavfn);
 		#elif defined ALLEGRO_MACOSX
-			(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "/usr/local/bin/oggenc -o \"%s\" -q 9 \"%s\"", soggfn, wavfn);
+			(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -q 9 \"%s\"", soggfn, wavfn);
 		#else
 			(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -q 9 \"%s\"", soggfn, wavfn);
 		#endif
@@ -586,7 +586,7 @@ int eof_add_silence_recode_mp3(char * oggfn, unsigned long ms)
 	(void) replace_filename(wavfn, eof_song_path, "decode.wav", sizeof(wavfn));
 	(void) replace_filename(mp3fn, eof_song_path, "original.mp3", sizeof(mp3fn));
 	#ifdef ALLEGRO_MACOSX
-	(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "/usr/local/bin/lame --decode \"%s\" \"%s\"", mp3fn, wavfn);
+	(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "lame --decode \"%s\" \"%s\"", mp3fn, wavfn);
 	#else
 	(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "lame --decode \"%s\" \"%s\"", mp3fn, wavfn);
 	#endif
@@ -697,7 +697,7 @@ int eof_add_silence_recode_mp3(char * oggfn, unsigned long ms)
 	#ifdef ALLEGRO_WINDOWS
 		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc2 -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
 	#elif defined ALLEGRO_MACOSX
-		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "/usr/local/bin/oggenc -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
+		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
 	#else
 		(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -b %d \"%s\"", soggfn, bitrate, wavfn);
 	#endif
@@ -711,7 +711,7 @@ int eof_add_silence_recode_mp3(char * oggfn, unsigned long ms)
 		#ifdef ALLEGRO_WINDOWS
 			(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc2 -o \"%s\" -q 9 \"%s\"", soggfn, wavfn);
 		#elif defined ALLEGRO_MACOSX
-			(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "/usr/local/bin/oggenc -o \"%s\" -q 9 \"%s\"", soggfn, wavfn);
+			(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -q 9 \"%s\"", soggfn, wavfn);
 		#else
 			(void) uszprintf(sys_command, (int) sizeof(sys_command) - 1, "oggenc -o \"%s\" -q 9 \"%s\"", soggfn, wavfn);
 		#endif
