@@ -6714,12 +6714,12 @@ void eof_render_editor_window_common(EOF_WINDOW *window)
 			eof_build_mmssms_string(EOF_SEEK_POS, &min, &sec, NULL, NULL);
 			textprintf_ex(eof_screen, eof_mono_font, eof_screen_layout.controls_x + 153, 23 + 8, eof_color_white, -1, "%02u:%02u", min, sec);
 			{
-				// [BEGIN gemini&catara | 2026-11-25 23:12 CET] Render single-row full-height 16-button toolbar incl. Sil (Leading Silence) (y=3..21)
+				// [BEGIN gemini&catara | 2026-11-26 00:32 CET] Render single-row full-height 17-button toolbar incl. DefT (Default Tones) (y=3..21)
 				const char *r1[] = {"Lead", "Bass", "Rhy", "BonG", "BonB", "Voc"};
 				int trs[] = {9, 8, 12, 14, 11, 6};
-				const char *r2[] = {"+Tone", "+Sect", "FHP", "Rest", "Prev", "Rate", "Swap", "Props", "Sil", "Imp"};
-				int w1 = 54, w2 = 41, i;
-				int bx2 = eof_screen_width - (10 * (w2 + 2)) - 4;
+				const char *r2[] = {"+Tone", "DefT", "+Sect", "FHP", "Rest", "Prev", "Rate", "Swap", "Props", "Sil", "Imp"};
+				int w1 = 51, w2 = 39, i;
+				int bx2 = eof_screen_width - (11 * (w2 + 2)) - 4;
 				int bx1 = bx2 - (6 * (w1 + 2)) - 6;
 				for(i = 0; i < 6; i++) {
 					char lbl[24]; int tr = trs[i], hn = (eof_song && tr > 0 && eof_get_track_size_all(eof_song, tr) > 0) ? 1 : 0, x1 = bx1 + i * (w1 + 2);
