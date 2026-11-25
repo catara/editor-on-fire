@@ -11,13 +11,13 @@
 
 ## Quality-of-Life (QoL) Improvements
 
-1. **Single-Row Full-Height 16-Button Rocksmith & Editing Toolbar (`src/editor.c`, `y = 3..21`)**
+1. **Single-Row Full-Height 17-Button Rocksmith & Editing Toolbar (`src/editor.c`, `y = 3..21`)**
    - **6 Track Switcher Buttons (`Lead`, `Bass`, `Rhy`, `BonG`, `BonB`, `Voc`):**
      - **Green:** Currently active track.
      - **Blue + `*` prefix:** Track contains charted notes or lyrics.
      - **Dark Gray:** Empty track.
      - **Dynamic Arrangement & Flag Tags:** Automatically appends `:R` (Rhythm), `:L` (Lead), `:B` (Bonus), and `:A` (Alternate).
-   - **10 Action Shortcut Buttons (`+Tone`, `+Sect`, `FHP`, `Rest`, `Prev`, `Rate`, `Swap`, `Props`, `Sil`, `Imp`):**
+   - **11 Action Shortcut Buttons (`+Tone`, `+Sect`, `FHP`, `Rest`, `Prev`, `Rate`, `Swap`, `Props`, `Sil`, `Imp`):**
      - **`+Tone`:** Add Rocksmith tone change (`eof_track_rs_tone_change_add`).
      - **`+Sect`:** Add Rocksmith section marker (`eof_rocksmith_section_dialog_add`).
      - **`FHP`:** List/edit Fret Hand Positions (`eof_track_fret_hand_positions`).

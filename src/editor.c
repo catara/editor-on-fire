@@ -4543,6 +4543,80 @@ void eof_editor_drum_logic(void)
 	}
 }
 
+// [BEGIN gemini&catara | 2026-11-26 00:18 CET] One-click Rocksmith Default Tones across active Pro Guitar/Bass tracks
+static void eof_add_or_replace_rs_tone(EOF_PRO_GUITAR_TRACK *tp, unsigned long pos, const char *name, unsigned long is_def)
+{
+	unsigned long i;
+	if(!tp || !name || !name[0]) return;
+	for(i = 0; i < tp->tonechanges; i++)
+	{
+		if(tp->tonechange[i].start_pos == pos || !ustricmp(tp->tonechange[i].name, name))
+		{
+			tp->tonechange[i].start_pos = pos;
+			tp->tonechange[i].end_pos = is_def;
+			strncpy(tp->tonechange[i].name, name, sizeof(tp->tonechange[i].name) - 1);
+			tp->tonechange[i].name[sizeof(tp->tonechange.name) - 1] = 0;
+			return;
+		}
+	}
+	if(tp->tonechanges < EOF_MAX_PHRASES)
+	{
+		tp->tonechange[tp->tonechanges].start_pos = pos;
+		tp->tonechange[tp->tonechanges].end_pos = is_def;
+		strncpy(tp->tonechange[tp->tonechanges].name, name, sizeof(tp->tonechange[tp->tonechanges].name) - 1);
+		tp->tonechange[tp->tonechanges].name[sizeof(tp->tonechange.name) - 1] = 0;
+		tp->tonechanges++;
+	}
+}
+
+static void eof_apply_default_rs_tones(void)
+{
+	int trs[4] = {EOF_TRACK_REAL_GUITAR, EOF_TRACK_REAL_BASS, EOF_TRACK_REAL_GUITAR_22, EOF_TRACK_REAL_BASS_22};
+	const char *def_gtr = get_config_string("rocksmith_tones", "default_guitar", "Default_Guitar");
+	const char *def_bass = get_config_string("rocksmith_tones", "default_bass", "Default_Bass");
+	const char *lead_tone = get_config_string("rocksmith_tones", "lead_tone", "Guitar_Lead");
+	const char *rhy_tone = get_config_string("rocksmith_tones", "rhythm_tone", "Guitar_Rhythm");
+	const char *bass_tone = get_config_string("rocksmith_tones", "bass_tone", "Bass");
+	int t;
+	if(!eof_song) return;
+	eof_prepare_undo(EOF_UNDO_TYPE_NONE);
+	for(t = 0; t < 4; t++)
+	{
+		int tr = trs[t];
+		EOF_PRO_GUITAR_TRACK *tp;
+		unsigned long n, first_pos = ULONG_MAX, pre_pos, pad_end = 0;
+		int is_bass = (tr == EOF_TRACK_REAL_BASS || tr == EOF_TRACK_REAL_BASS_22);
+		const char *start_tone = is_bass ? def_bass : def_gtr;
+		const char *main_tone;
+		if(tr >= (int)eof_song->tracks || !eof_song->track[tr]) continue;
+		tp = eof_song->track[tr]->pgtrack;
+		if(!tp || tp->notes == 0) continue;
+		for(n = 0; n < tp->notes; n++)
+		{
+			if(tp->pgnote[n] && tp->pgnote[n]->pos < first_pos)
+				first_pos = tp->pgnote[n]->pos;
+		}
+		if(first_pos == ULONG_MAX) continue;
+		if(eof_song->beats > 0 && eof_song->beat[0])
+			pad_end = eof_song->beat[0]->pos;
+		if(is_bass) main_tone = bass_tone;
+		else if(eof_song->track[tr]->arrangement == 2) main_tone = rhy_tone;
+		else main_tone = lead_tone;
+
+		if(first_pos >= 500 && (pad_end == 0 || first_pos >= pad_end + 500)) pre_pos = first_pos - 500;
+		else pre_pos = (first_pos > 50) ? (first_pos - 50) : ((first_pos > 1) ? 1 : 0);
+		if(pre_pos == 0 && first_pos > 1) pre_pos = 1;
+
+		eof_add_or_replace_rs_tone(tp, 0, start_tone, 0);
+		if(pre_pos > 0) eof_add_or_replace_rs_tone(tp, pre_pos, main_tone, 1);
+		strncpy(tp->defaulttone, main_tone, sizeof(tp->defaulttone) - 1);
+		tp->defaulttone[sizeof(tp->defaulttone) - 1] = 0;
+		eof_track_sort_tones(tp);
+	}
+	eof_fix_window_title();
+}
+// [END gemini&catara | 2026-11-26 00:18 CET]
+
 void eof_editor_logic(void)
 {
 //	eof_log("eof_editor_logic() entered");
@@ -6660,8 +6734,8 @@ void eof_render_editor_window_common(EOF_WINDOW *window)
 					rectfill(eof_screen, x1, 3, x1 + w1, 21, col); rect(eof_screen, x1, 3, x1 + w1, 21, eof_color_white);
 					textout_centre_ex(eof_screen, font, lbl, x1 + w1 / 2, 8, eof_color_white, -1);
 				}
-				for(i = 0; i < 10; i++) {
-					int x1 = bx2 + i * (w2 + 2), tcol = (i <= 2) ? eof_color_yellow : ((i == 9) ? eof_color_cyan : eof_color_white);
+				for(i = 0; i < 11; i++) {
+					int x1 = bx2 + i * (w2 + 2), tcol = (i <= 3) ? eof_color_yellow : ((i == 10) ? eof_color_cyan : eof_color_white);
 					rectfill(eof_screen, x1, 3, x1 + w2, 21, makecol(55, 55, 65)); rect(eof_screen, x1, 3, x1 + w2, 21, eof_color_white);
 					textout_centre_ex(eof_screen, font, r2[i], x1 + w2 / 2, 8, tcol, -1);
 				}
@@ -8283,23 +8357,24 @@ void eof_editor_logic_common(void)
 	/* [BEGIN gemini&catara | 2026-11-24 15:52 CET] Handle 2-row toolbar clicks above timeline */
 	if(!eof_full_height_3d_preview && !eof_full_screen_3d) {
 		static int rs_btn = -1; int midx[] = {8, 7, 11, 13, 10, 5}, i;
-		int bx2 = eof_screen_width - (10 * 43) - 4, bx1 = bx2 - (6 * 56) - 6;
+		int bx2 = eof_screen_width - (11 * 41) - 4, bx1 = bx2 - (6 * 53) - 6;
 		if((mouse_b & 1) && eof_scaled_mouse_y >= 3 && eof_scaled_mouse_y <= 21) {
-			for(i = 0; i < 6; i++) if(eof_scaled_mouse_x >= bx1 + i*56 && eof_scaled_mouse_x <= bx1 + i*56 + 54) rs_btn = i;
-			for(i = 0; i < 10; i++) if(eof_scaled_mouse_x >= bx2 + i*43 && eof_scaled_mouse_x <= bx2 + i*43 + 41) rs_btn = 10 + i;
+			for(i = 0; i < 6; i++) if(eof_scaled_mouse_x >= bx1 + i*53 && eof_scaled_mouse_x <= bx1 + i*53 + 51) rs_btn = i;
+			for(i = 0; i < 11; i++) if(eof_scaled_mouse_x >= bx2 + i*41 && eof_scaled_mouse_x <= bx2 + i*41 + 39) rs_btn = 10 + i;
 		} else if(rs_btn >= 0) {
 			int act = rs_btn; rs_btn = -1;
 			if(act < 6 && (eof_track_selected_menu + midx[act])->proc) (void)(eof_track_selected_menu + midx[act])->proc();
 			else if(act == 10) (void)eof_track_rs_tone_change_add();
-			else if(act == 11) (void)eof_rocksmith_section_dialog_add();
-			else if(act == 12) (void)eof_track_fret_hand_positions();
-			else if(act == 13) (void)eof_menu_edit_select_rest();
-			else if(act == 14) (void)eof_menu_edit_select_previous();
-			else if(act == 15) (void)eof_menu_edit_playback_custom();
-			else if(act == 16) (void)eof_menu_song_swap_piano_rolls();
-			else if(act == 17) (void)eof_menu_song_properties();
-			else if(act == 18) (void)eof_menu_song_add_silence();
-			else if(act == 19) { if(eof_selected_track == 6) (void)eof_menu_file_lyrics_import(); else (void)eof_menu_file_gp_import(); }
+			else if(act == 11) eof_apply_default_rs_tones();
+			else if(act == 12) (void)eof_rocksmith_section_dialog_add();
+			else if(act == 13) (void)eof_track_fret_hand_positions();
+			else if(act == 14) (void)eof_menu_edit_select_rest();
+			else if(act == 15) (void)eof_menu_edit_select_previous();
+			else if(act == 16) (void)eof_menu_edit_playback_custom();
+			else if(act == 17) (void)eof_menu_song_swap_piano_rolls();
+			else if(act == 18) (void)eof_menu_song_properties();
+			else if(act == 19) (void)eof_menu_song_add_silence();
+			else if(act == 20) { if(eof_selected_track == 6) (void)eof_menu_file_lyrics_import(); else (void)eof_menu_file_gp_import(); }
 		}
 	}
 	/* [END gemini&catara | 2026-11-24 15:52 CET] */
