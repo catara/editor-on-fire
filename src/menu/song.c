@@ -425,7 +425,16 @@ DIALOG eof_cdlc_metadata_dialog[] = {
 	{ NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL }
 };
 
-int eof_menu_cdlc_metadata(DIALOG *d) { (void)d; eof_cdlc_meta_rw(eof_cdlc_metadata_dialog, 0); eof_color_dialog(eof_cdlc_metadata_dialog, gui_fg_color, gui_bg_color); eof_conditionally_center_dialog(eof_cdlc_metadata_dialog); if(eof_popup_dialog(eof_cdlc_metadata_dialog, 2) == 66) eof_cdlc_meta_rw(eof_cdlc_metadata_dialog, 1); return D_REDRAW; }
+int eof_menu_cdlc_metadata(DIALOG *d) {
+	(void)d;
+	eof_cdlc_meta_rw(eof_cdlc_metadata_dialog, 0);
+	eof_color_dialog(eof_cdlc_metadata_dialog, gui_fg_color, gui_bg_color);
+	eof_conditionally_center_dialog(eof_cdlc_metadata_dialog);
+	if(eof_popup_dialog(eof_cdlc_metadata_dialog, 2) == 66) eof_cdlc_meta_rw(eof_cdlc_metadata_dialog, 1);
+	eof_render();
+	broadcast_dialog_message(MSG_DRAW, 0);
+	return D_O_K;
+}
 // [END gemini&catara | 2026-11-24 13:52 CET]
 
 DIALOG eof_song_properties_dialog[] =
