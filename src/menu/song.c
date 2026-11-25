@@ -257,8 +257,8 @@ DIALOG eof_ini_add_dialog[] =
 // [BEGIN gemini&catara | 2026-11-24 13:52 CET] CDLC & Fork Metadata dialog (18 text boxes w/ Paste + 8 checkboxes + 3 synced = 29 fields)
 static char cdlc_tbufs[18][512];
 static void eof_cdlc_meta_filepath(char *out, size_t sz) {
-	if(eof_song_path[0]) snprintf(out, sz, "%s/cdlc.ini", eof_song_path);
-	else snprintf(out, sz, "cdlc.ini");
+	if(eof_song_path[0]) snprintf(out, sz, "%s/cdlc_meta.ini", eof_song_path);
+	else snprintf(out, sz, "cdlc_meta.ini");
 }
 static int eof_cdlc_paste_btn(DIALOG *d) {
 	int idx = d->d1;
