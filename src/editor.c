@@ -6639,12 +6639,12 @@ void eof_render_editor_window_common(EOF_WINDOW *window)
 			eof_build_mmssms_string(EOF_SEEK_POS, &min, &sec, NULL, NULL);
 			textprintf_ex(eof_screen, eof_mono_font, eof_screen_layout.controls_x + 153, 23 + 8, eof_color_white, -1, "%02u:%02u", min, sec);
 			{
-				// [BEGIN gemini&catara | 2026-11-24 15:55 CET] Render single-row full-height 15-button toolbar (y=3..21)
+				// [BEGIN gemini&catara | 2026-11-25 23:12 CET] Render single-row full-height 16-button toolbar incl. Sil (Leading Silence) (y=3..21)
 				const char *r1[] = {"Lead", "Bass", "Rhy", "BonG", "BonB", "Voc"};
 				int trs[] = {9, 8, 12, 14, 11, 6};
-				const char *r2[] = {"+Tone", "+Sect", "FHP", "Rest", "Prev", "Rate", "Swap", "Props", "Imp"};
-				int w1 = 56, w2 = 43, i;
-				int bx2 = eof_screen_width - (9 * (w2 + 2)) - 4;
+				const char *r2[] = {"+Tone", "+Sect", "FHP", "Rest", "Prev", "Rate", "Swap", "Props", "Sil", "Imp"};
+				int w1 = 54, w2 = 41, i;
+				int bx2 = eof_screen_width - (10 * (w2 + 2)) - 4;
 				int bx1 = bx2 - (6 * (w1 + 2)) - 6;
 				for(i = 0; i < 6; i++) {
 					char lbl[24]; int tr = trs[i], hn = (eof_song && tr > 0 && eof_get_track_size_all(eof_song, tr) > 0) ? 1 : 0, x1 = bx1 + i * (w1 + 2);
@@ -6660,12 +6660,12 @@ void eof_render_editor_window_common(EOF_WINDOW *window)
 					rectfill(eof_screen, x1, 3, x1 + w1, 21, col); rect(eof_screen, x1, 3, x1 + w1, 21, eof_color_white);
 					textout_centre_ex(eof_screen, font, lbl, x1 + w1 / 2, 8, eof_color_white, -1);
 				}
-				for(i = 0; i < 9; i++) {
-					int x1 = bx2 + i * (w2 + 2), tcol = (i <= 2) ? eof_color_yellow : ((i == 8) ? eof_color_cyan : eof_color_white);
+				for(i = 0; i < 10; i++) {
+					int x1 = bx2 + i * (w2 + 2), tcol = (i <= 2) ? eof_color_yellow : ((i == 9) ? eof_color_cyan : eof_color_white);
 					rectfill(eof_screen, x1, 3, x1 + w2, 21, makecol(55, 55, 65)); rect(eof_screen, x1, 3, x1 + w2, 21, eof_color_white);
 					textout_centre_ex(eof_screen, font, r2[i], x1 + w2 / 2, 8, tcol, -1);
 				}
-				// [END gemini&catara | 2026-11-24 15:55 CET]
+				// [END gemini&catara | 2026-11-25 23:12 CET]
 			}
 		}
 	}
@@ -8283,10 +8283,10 @@ void eof_editor_logic_common(void)
 	/* [BEGIN gemini&catara | 2026-11-24 15:52 CET] Handle 2-row toolbar clicks above timeline */
 	if(!eof_full_height_3d_preview && !eof_full_screen_3d) {
 		static int rs_btn = -1; int midx[] = {8, 7, 11, 13, 10, 5}, i;
-		int bx2 = eof_screen_width - (9 * 45) - 4, bx1 = bx2 - (6 * 58) - 6;
+		int bx2 = eof_screen_width - (10 * 43) - 4, bx1 = bx2 - (6 * 56) - 6;
 		if((mouse_b & 1) && eof_scaled_mouse_y >= 3 && eof_scaled_mouse_y <= 21) {
-			for(i = 0; i < 6; i++) if(eof_scaled_mouse_x >= bx1 + i*58 && eof_scaled_mouse_x <= bx1 + i*58 + 56) rs_btn = i;
-			for(i = 0; i < 9; i++) if(eof_scaled_mouse_x >= bx2 + i*45 && eof_scaled_mouse_x <= bx2 + i*45 + 43) rs_btn = 10 + i;
+			for(i = 0; i < 6; i++) if(eof_scaled_mouse_x >= bx1 + i*56 && eof_scaled_mouse_x <= bx1 + i*56 + 54) rs_btn = i;
+			for(i = 0; i < 10; i++) if(eof_scaled_mouse_x >= bx2 + i*43 && eof_scaled_mouse_x <= bx2 + i*43 + 41) rs_btn = 10 + i;
 		} else if(rs_btn >= 0) {
 			int act = rs_btn; rs_btn = -1;
 			if(act < 6 && (eof_track_selected_menu + midx[act])->proc) (void)(eof_track_selected_menu + midx[act])->proc();
@@ -8298,7 +8298,8 @@ void eof_editor_logic_common(void)
 			else if(act == 15) (void)eof_menu_edit_playback_custom();
 			else if(act == 16) (void)eof_menu_song_swap_piano_rolls();
 			else if(act == 17) (void)eof_menu_song_properties();
-			else if(act == 18) { if(eof_selected_track == 6) (void)eof_menu_file_lyrics_import(); else (void)eof_menu_file_gp_import(); }
+			else if(act == 18) (void)eof_menu_song_add_silence();
+			else if(act == 19) { if(eof_selected_track == 6) (void)eof_menu_file_lyrics_import(); else (void)eof_menu_file_gp_import(); }
 		}
 	}
 	/* [END gemini&catara | 2026-11-24 15:52 CET] */

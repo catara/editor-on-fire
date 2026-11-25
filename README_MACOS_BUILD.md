@@ -2,7 +2,7 @@
 
 - **Authors:** gemini 3.1 & catara
 - **Fork Repository:** `https://github.com` (forked from `raynebc/editor-on-fire` `rc16`)
-- **Current Version:** `v0.1.25.20261125-2306` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
+- **Current Version:** `v0.1.26.20261125-2309` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
 - **Last Updated:** 2026-11-25 22:22 CET
 - **Target Platform:** Apple Silicon Macs (M1/M2/M3/M4+) running **macOS 27.2.x** (plus portable `linux/amd64` Docker + XQuartz build)
 - **Dependencies:** `NewCreature/Allegro-Legacy` + `Allegro 5` + `alogg` + `dylibbundler`
@@ -11,13 +11,13 @@
 
 ## Quality-of-Life (QoL) Improvements
 
-1. **Single-Row Full-Height 15-Button Rocksmith & Editing Toolbar (`src/editor.c`, `y = 3..21`)**
+1. **Single-Row Full-Height 16-Button Rocksmith & Editing Toolbar (`src/editor.c`, `y = 3..21`)**
    - **6 Track Switcher Buttons (`Lead`, `Bass`, `Rhy`, `BonG`, `BonB`, `Voc`):**
      - **Green:** Currently active track.
      - **Blue + `*` prefix:** Track contains charted notes or lyrics.
      - **Dark Gray:** Empty track.
      - **Dynamic Arrangement & Flag Tags:** Automatically appends `:R` (Rhythm), `:L` (Lead), `:B` (Bonus), and `:A` (Alternate).
-   - **9 Action Shortcut Buttons (`+Tone`, `+Sect`, `FHP`, `Rest`, `Prev`, `Rate`, `Swap`, `Props`, `Imp`):**
+   - **10 Action Shortcut Buttons (`+Tone`, `+Sect`, `FHP`, `Rest`, `Prev`, `Rate`, `Swap`, `Props`, `Sil`, `Imp`):**
      - **`+Tone`:** Add Rocksmith tone change (`eof_track_rs_tone_change_add`).
      - **`+Sect`:** Add Rocksmith section marker (`eof_rocksmith_section_dialog_add`).
      - **`FHP`:** List/edit Fret Hand Positions (`eof_track_fret_hand_positions`).
@@ -25,6 +25,7 @@
      - **`Rate`:** Set custom playback speed (`eof_menu_edit_playback_custom`).
      - **`Swap`:** Swap main and secondary piano rolls (`eof_menu_song_swap_piano_rolls`).
      - **`Props`:** Open Song Properties (`eof_menu_song_properties`).
+     - **`Sil`:** Add Leading Silence (`eof_menu_song_add_silence`).
      - **`Imp`:** Context-aware import — opens **Lyrics Import** when `Voc` is active, and **Guitar Pro (.gp5) Import** on Guitar/Bass tracks.
 
 2. **CDLC / Fork Metadata Dialog (`Song > Properties > CDLC Meta...`, `src/menu/song.c`)**
@@ -121,3 +122,4 @@ open ~/Desktop/EOF-XQuartz.app
 | `v0.1.23.20261125-2304` | 2026-11-25 23:04 | Automated build | Compiled via build script |
 | `v0.1.24.20261125-2305` | 2026-11-25 23:05 | Automated build | Compiled via build script |
 | `v0.1.25.20261125-2306` | 2026-11-25 23:06 | Automated build | Compiled via build script |
+| `v0.1.26.20261125-2309` | 2026-11-25 23:09 | Automated build | Compiled via build script |
