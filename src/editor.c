@@ -8303,56 +8303,31 @@ void eof_editor_logic_common(void)
 	}
 	/* [END gemini&catara | 2026-11-24 15:52 CET] */
 
-	/* handle playback controls */
-	if(!eof_full_height_3d_preview)
-	{	//The playback controls will not be accessible if the 3D preview window is rendering over it
-		if((eof_scaled_mouse_x >= eof_screen_layout.controls_x) && (eof_scaled_mouse_x < eof_screen_layout.controls_x + 139) && (eof_scaled_mouse_y >= 22 + 8) && (eof_scaled_mouse_y < 22 + 17 + 8))
+	/* [BEGIN gemini&catara | 2026-11-25 22:21 CET] Reliable macOS transport controls using dedicated press/release state */
+	if(!eof_full_height_3d_preview && !eof_full_screen_3d)
+	{
+		static int transport_btn_down = -1;
+		int in_bar = ((eof_scaled_mouse_x >= eof_screen_layout.controls_x) && (eof_scaled_mouse_x < eof_screen_layout.controls_x + 139) && (eof_scaled_mouse_y >= 22 + 8) && (eof_scaled_mouse_y < 22 + 17 + 8));
+		if(mouse_b & 1)
 		{
-			if(!eof_full_screen_3d && (mouse_b & 1))
+			if(in_bar)
 			{
 				eof_selected_control = (eof_scaled_mouse_x - eof_screen_layout.controls_x) / 30;
-				eof_blclick_released = 0;
-				if(eof_selected_control == 1)
-				{
-					eof_music_rewind();
-				}
-				else if(eof_selected_control == 3)
-				{
-					eof_music_forward();
-				}
-			}
-			if(!(mouse_b & 1))
-			{
-				if(!eof_blclick_released)
-				{
-					eof_blclick_released = 1;
-					if(eof_selected_control == 0)
-					{
-						(void) eof_menu_song_seek_start();
-					}
-					else if(eof_selected_control == 2)
-					{
-						eof_music_play(0);
-					}
-					else if(eof_selected_control == 4)
-					{
-						(void) eof_menu_song_seek_end();
-					}
-					eof_selected_control = -1;
-				}
+				transport_btn_down = eof_selected_control;
+				if(eof_selected_control == 1) eof_music_rewind();
+				else if(eof_selected_control == 3) eof_music_forward();
 			}
 		}
 		else
 		{
-			// [BEGIN gemini&catara | 2026-11-25 22:19 CET] Allow transport button release even if macOS trackpad shifts slightly on mouse-up
-			if(!(mouse_b & 1) && !eof_blclick_released && eof_selected_control >= 0)
+			if(transport_btn_down >= 0)
 			{
-				eof_blclick_released = 1;
-				if(eof_selected_control == 0) (void) eof_menu_song_seek_start();
-				else if(eof_selected_control == 2) eof_music_play(0);
-				else if(eof_selected_control == 4) (void) eof_menu_song_seek_end();
+				int fired = transport_btn_down;
+				transport_btn_down = -1;
+				if(fired == 0) (void) eof_menu_song_seek_start();
+				else if(fired == 2) eof_music_play(0);
+				else if(fired == 4) (void) eof_menu_song_seek_end();
 			}
-			// [END gemini&catara | 2026-11-25 22:19 CET]
 			eof_selected_control = -1;
 		}
 	}
@@ -8360,6 +8335,7 @@ void eof_editor_logic_common(void)
 	{
 		eof_selected_control = -1;
 	}
+	/* [END gemini&catara | 2026-11-25 22:21 CET] */
 }
 
 void eof_seek_to_nearest_grid_snap(void)
