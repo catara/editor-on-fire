@@ -4613,7 +4613,6 @@ static void eof_apply_default_rs_tones(void)
 		if(pre_pos > 0) eof_add_or_replace_rs_tone(tp, pre_pos, main_tone, 1);
 		strncpy(tp->defaulttone, main_tone, sizeof(tp->defaulttone) - 1);
 		tp->defaulttone[sizeof(tp->defaulttone) - 1] = 0;
-		eof_track_sort_tones(tp);
 	}
 	eof_fix_window_title();
 }
