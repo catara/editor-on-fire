@@ -1,10 +1,10 @@
-// [BEGIN gemini&catara | 2026-11-24 15:39 CET] Custom toolbar headers
+// [BEGIN gemini&catara | 2026-11-24 15:52 CET] Custom toolbar headers
 #include "menu/beat.h"
 #include "menu/edit.h"
 #include "menu/file.h"
 #include "menu/song.h"
 #include "menu/track.h"
-// [END gemini&catara | 2026-11-24 15:39 CET]
+// [END gemini&catara | 2026-11-24 15:52 CET]
 #include <math.h>
 #include "menu/file.h"
 #include "menu/edit.h"
@@ -6639,13 +6639,15 @@ void eof_render_editor_window_common(EOF_WINDOW *window)
 			eof_build_mmssms_string(EOF_SEEK_POS, &min, &sec, NULL, NULL);
 			textprintf_ex(eof_screen, eof_mono_font, eof_screen_layout.controls_x + 153, 23 + 8, eof_color_white, -1, "%02u:%02u", min, sec);
 			{
-				// [BEGIN gemini&catara | 2026-11-24 15:39 CET] Render 2-row toolbar strictly above overview timeline (y=2..14 & y=15..27)
+				// [BEGIN gemini&catara | 2026-11-24 15:55 CET] Render single-row full-height 15-button toolbar (y=3..21)
 				const char *r1[] = {"Lead", "Bass", "Rhy", "BonG", "BonB", "Voc"};
 				int trs[] = {9, 8, 12, 14, 11, 6};
-				const char *r2[] = {"+Tone", "+Sect", "FHP", "SelRest", "SelPrev", "Rate", "SwapPR", "Props", "Import"};
-				int w1 = 50, w2 = 42, i, bx1 = eof_screen_width - 318 - 6, bx2 = eof_screen_width - (9 * 44) - 6;
+				const char *r2[] = {"+Tone", "+Sect", "FHP", "Rest", "Prev", "Rate", "Swap", "Props", "Imp"};
+				int w1 = 56, w2 = 43, i;
+				int bx2 = eof_screen_width - (9 * (w2 + 2)) - 4;
+				int bx1 = bx2 - (6 * (w1 + 2)) - 6;
 				for(i = 0; i < 6; i++) {
-					char lbl[24]; int tr = trs[i], hn = (eof_song && tr > 0 && eof_get_track_size_all(eof_song, tr) > 0) ? 1 : 0, x1 = bx1 + i * 53;
+					char lbl[24]; int tr = trs[i], hn = (eof_song && tr > 0 && eof_get_track_size_all(eof_song, tr) > 0) ? 1 : 0, x1 = bx1 + i * (w1 + 2);
 					int col = (tr > 0 && eof_selected_track == tr) ? eof_color_green : (hn ? makecol(40, 105, 175) : makecol(60, 60, 60));
 					snprintf(lbl, sizeof(lbl), "%s%s", hn ? "*" : "", r1[i]);
 					if(eof_song && tr > 0 && tr != 6) {
@@ -6655,15 +6657,15 @@ void eof_render_editor_window_common(EOF_WINDOW *window)
 						if(flg & 16) tags[tp++] = 66; if(flg & 64) tags[tp++] = 65;
 						if(tp > 0) { strncat(lbl, ":", sizeof(lbl)-strlen(lbl)-1); strncat(lbl, tags, sizeof(lbl)-strlen(lbl)-1); }
 					}
-					rectfill(eof_screen, x1, 2, x1 + w1, 14, col); rect(eof_screen, x1, 2, x1 + w1, 14, eof_color_white);
-					textout_centre_ex(eof_screen, font, lbl, x1 + w1 / 2, 5, eof_color_white, -1);
+					rectfill(eof_screen, x1, 3, x1 + w1, 21, col); rect(eof_screen, x1, 3, x1 + w1, 21, eof_color_white);
+					textout_centre_ex(eof_screen, font, lbl, x1 + w1 / 2, 8, eof_color_white, -1);
 				}
 				for(i = 0; i < 9; i++) {
-					int x1 = bx2 + i * 44, tcol = (i <= 2) ? eof_color_yellow : ((i == 8) ? eof_color_cyan : eof_color_white);
-					rectfill(eof_screen, x1, 15, x1 + w2, 27, makecol(55, 55, 65)); rect(eof_screen, x1, 15, x1 + w2, 27, eof_color_white);
-					textout_centre_ex(eof_screen, font, r2[i], x1 + w2 / 2, 18, tcol, -1);
+					int x1 = bx2 + i * (w2 + 2), tcol = (i <= 2) ? eof_color_yellow : ((i == 8) ? eof_color_cyan : eof_color_white);
+					rectfill(eof_screen, x1, 3, x1 + w2, 21, makecol(55, 55, 65)); rect(eof_screen, x1, 3, x1 + w2, 21, eof_color_white);
+					textout_centre_ex(eof_screen, font, r2[i], x1 + w2 / 2, 8, tcol, -1);
 				}
-				// [END gemini&catara | 2026-11-24 15:39 CET]
+				// [END gemini&catara | 2026-11-24 15:55 CET]
 			}
 		}
 	}
@@ -8278,15 +8280,13 @@ void eof_editor_logic_common(void)
 		}
 	}//If the chart or fret catalog is playing
 
-	/* [BEGIN gemini&catara | 2026-11-24 15:39 CET] Handle 2-row toolbar clicks above timeline */
+	/* [BEGIN gemini&catara | 2026-11-24 15:52 CET] Handle 2-row toolbar clicks above timeline */
 	if(!eof_full_height_3d_preview && !eof_full_screen_3d) {
 		static int rs_btn = -1; int midx[] = {8, 7, 11, 13, 10, 5}, i;
-		int bx1 = eof_screen_width - 318 - 6, bx2 = eof_screen_width - (9 * 44) - 6;
-		if(mouse_b & 1) {
-			if(eof_scaled_mouse_y >= 2 && eof_scaled_mouse_y <= 14)
-				for(i = 0; i < 6; i++) if(eof_scaled_mouse_x >= bx1 + i*53 && eof_scaled_mouse_x <= bx1 + i*53 + 50) rs_btn = i;
-			else if(eof_scaled_mouse_y >= 15 && eof_scaled_mouse_y <= 27)
-				for(i = 0; i < 9; i++) if(eof_scaled_mouse_x >= bx2 + i*44 && eof_scaled_mouse_x <= bx2 + i*44 + 42) rs_btn = 10 + i;
+		int bx2 = eof_screen_width - (9 * 45) - 4, bx1 = bx2 - (6 * 58) - 6;
+		if((mouse_b & 1) && eof_scaled_mouse_y >= 3 && eof_scaled_mouse_y <= 21) {
+			for(i = 0; i < 6; i++) if(eof_scaled_mouse_x >= bx1 + i*58 && eof_scaled_mouse_x <= bx1 + i*58 + 56) rs_btn = i;
+			for(i = 0; i < 9; i++) if(eof_scaled_mouse_x >= bx2 + i*45 && eof_scaled_mouse_x <= bx2 + i*45 + 43) rs_btn = 10 + i;
 		} else if(rs_btn >= 0) {
 			int act = rs_btn; rs_btn = -1;
 			if(act < 6 && (eof_track_selected_menu + midx[act])->proc) (void)(eof_track_selected_menu + midx[act])->proc();
@@ -8301,7 +8301,7 @@ void eof_editor_logic_common(void)
 			else if(act == 18) { if(eof_selected_track == 6) (void)eof_menu_file_lyrics_import(); else (void)eof_menu_file_gp_import(); }
 		}
 	}
-	/* [END gemini&catara | 2026-11-24 15:39 CET] */
+	/* [END gemini&catara | 2026-11-24 15:52 CET] */
 
 	/* handle playback controls */
 	if(!eof_full_height_3d_preview)
