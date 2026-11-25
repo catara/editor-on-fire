@@ -32,6 +32,7 @@
      - **18 Text Fields (each with a macOS `pbpaste` `Paste` button):** `Version`, `CDLCID`, `txt_EoFPath`, `YBLink`, `BasedOnYB`, `BasedOnCF`, `BaseOnRB`, `BasedOn_GP`, `TabLinks`, `Spotify`, `Description`, `toDo`, `ToneDetails`, `SaveRemotelyPath`, `PackageDate`, `UpdateDate`, `PackageDetails`, `CF_Author`.
      - **8 Checkboxes:** `SaveInVerisonInfo`, `SaveInDB`, `SaveRemotely`, `Has_Slide`, `Has_Acoustic`, `NOTProductionReady`, `Has_AIUsedForGeneration`, `Is_AIFullyGenerated`.
      - **3 Auto-Synced Fields:** `Songtitle`, `Artist`, and `Album` sync automatically from Song Properties on Save/OK.
+     - **Sidecar File Design (`<song_folder>/cdlc_meta.ini`):** Creates a dedicated `cdlc_meta.ini` sidecar file in the active song folder rather than altering EOF's strict binary `.eof` format, ensuring 100% compatibility with upstream EOF, Rocksmith Toolkit, and DLC Builder.
 
 3. **Smart Startup & Preference Persistence (`src/main.c`, `build_eof_cocoa.sh`)**
    - **Auto-Load Last Project:** Saves the active `.eof` path to `~/Library/Application Support/EOF/last_song.txt` on exit and re-opens it automatically on next launch if no CLI argument is passed.
