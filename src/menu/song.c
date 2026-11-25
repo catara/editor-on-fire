@@ -228,15 +228,48 @@ MENU eof_filtered_song_menu[EOF_SCRATCH_MENU_SIZE];	//This will be built by eof_
 
 char (*eof_ini_dialog_array)[EOF_INI_LENGTH] = NULL;	//Used to point to whichever array of strings is to be edited by the INI dialog functions
 unsigned short *eof_ini_dialog_count = NULL;			//Used to point to the counter tracking the number of strings in the above array
+// [BEGIN gemini&catara | 2026-11-25 22:32 CET] Clipboard Paste helper for Song Properties & Default INI reference text
+static const char eof_ini_reference_text[] =
+	"Valid song.ini keys -> UI labels:\n"
+	"----------------------------------\n"
+	"frettist     = Charter (Author)\n"
+	"name         = Song Title\n"
+	"artist       = Artist\n"
+	"album        = Album\n"
+	"genre        = Genre\n"
+	"year         = Year\n"
+	"track        = Track #\n"
+	"delay        = Delay (ms)\n"
+	"loading_text = Song Comment / Loading\n"
+	"diff_band    = Diff. (0-6)\n"
+	"lyrics       = Lyrics (0/1)\n"
+	"eighth_note_hopo = 8th Note HO/PO";
+
+static int eof_props_paste_btn(DIALOG *d) {
+	char *dst = (char *)d->dp2;
+	FILE *fp = popen("pbpaste", "r");
+	if(fp && dst) {
+		size_t n = fread(dst, 1, 254, fp);
+		dst[n] = 0;
+		while(n > 0 && (dst[n-1] == '\n' || dst[n-1] == '\r')) dst[--n] = 0;
+		pclose(fp);
+	}
+	return D_REDRAW;
+}
+// [END gemini&catara | 2026-11-25 22:32 CET]
+
 DIALOG eof_ini_dialog[] =
 {
 	/* (proc)             (x)  (y)  (w)  (h)  (fg) (bg) (key) (flags) (d1) (d2) (dp)                 (dp2) (dp3) */
-	{ eof_window_proc, 0,   48,  346, 232, 2,   23,  0,    0,      0,   0,   eof_etext2,          NULL, NULL },
+	{ eof_window_proc, 0,   48,  590, 232, 2,   23,  0,    0,      0,   0,   eof_etext2,          NULL, NULL },
 	{ d_agup_list_proc,   12,  84,  240, 138, 2,   23,  0,    0,      0,   0,   (void *)eof_ini_list,NULL, NULL },
 	{ d_agup_push_proc,   264, 84,  68,  28,  2,   23,  'a',  D_EXIT, 0,   0,   "&Add",              NULL, (void *)eof_ini_dialog_add },
 	{ d_agup_push_proc,   264, 124,  68,  28,  2,   23,  'e',  D_EXIT, 0,   0,   "&Edit",              NULL, (void *)eof_ini_dialog_edit },
 	{ d_agup_push_proc,   264, 164, 68,  28,  2,   23,  'l',  D_EXIT, 0,   0,   "De&lete",           NULL, (void *)eof_ini_dialog_delete },
 	{ d_agup_button_proc, 12,  235, 240, 28,  2,   23,  '\r', D_EXIT, 0,   0,   "Done",              NULL, NULL },
+	// [BEGIN gemini&catara | 2026-11-25 22:32 CET] INI key reference box
+	{ d_agup_textbox_proc,344, 84,  234, 179, 2,   23,  0,    0,      0,   0,   (void *)eof_ini_reference_text, NULL, NULL },
+	// [END gemini&catara | 2026-11-25 22:32 CET]
 	{ NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL }
 };
 
@@ -386,13 +419,13 @@ DIALOG eof_song_properties_dialog[] =
 	/* (proc)              (x)  (y)  (w)  (h)  (fg) (bg) (key) (flags) (d1) (d2) (dp)                    (dp2) (dp3) */
 	{ eof_window_proc,  0,   0,   480, 370, 0,   0,   0,    0,      0,   0,   "Song Properties",      NULL, NULL },
 	{ d_agup_text_proc,    12,  40,  80,  12,  0,   0,   0,    0,      0,   0,   "Song Title",           NULL, NULL },
-	{ eof_edit_proc,        12,  56,  184, 20,  0,   0,   0,    0,      255, 0,   eof_etext,              NULL, NULL },
+	{ eof_edit_proc,        12,  56,  142, 20,  0,   0,   0,    0,      255, 0,   eof_etext,              NULL, NULL },
 	{ d_agup_text_proc,    12,  88,  96,  12,  0,   0,   0,    0,      0,   0,   "Artist",               NULL, NULL },
-	{ eof_edit_proc,        12,  104, 184, 20,  0,   0,   0,    0,      255, 0,   eof_etext2,             NULL, NULL },
+	{ eof_edit_proc,        12,  104, 142, 20,  0,   0,   0,    0,      255, 0,   eof_etext2,             NULL, NULL },
 	{ d_agup_text_proc,    12,  136, 108, 12,  0,   0,   0,    0,      0,   0,   "Charter",              NULL, NULL },
 	{ eof_edit_proc,        12,  152, 184, 20,  0,   0,   0,    0,      255, 0,   eof_etext3,             NULL, NULL },
 	{ d_agup_text_proc,    12,  184, 108, 12,  0,   0,   0,    0,      0,   0,   "Album",                NULL, NULL },
-	{ eof_edit_proc,        12,  200, 184, 20,  0,   0,   0,    0,      255, 0,   eof_etext8,             NULL, NULL },
+	{ eof_edit_proc,        12,  200, 142, 20,  0,   0,   0,    0,      255, 0,   eof_etext8,             NULL, NULL },
 	{ d_agup_text_proc,    12,  232, 108, 12,  0,   0,   0,    0,      0,   0,   "Genre",                NULL, NULL },
 	{ eof_edit_proc,        12,  248, 184, 20,  0,   0,   0,    0,      255, 0,   eof_etext9,             NULL, NULL },
 	{ d_agup_text_proc,    12,  272, 108, 12,  0,   0,   0,    0,      0,   0,   "Track #",              NULL, NULL },
@@ -416,6 +449,11 @@ DIALOG eof_song_properties_dialog[] =
 	{ d_agup_button_proc,  380, 315, 84,  24,  0,   0,   '\r', D_EXIT, 0,   0,   "OK",                   NULL, NULL },
 	// [BEGIN gemini&catara | 2026-11-24 15:42 CET] CDLC Meta button in Song Properties
 	{ d_agup_push_proc,    380, 280, 84,  26,  0,   0,   0,      0,      0,   0,   "CDLC Meta...",         NULL, (void *)eof_menu_cdlc_metadata },
+	// [BEGIN gemini&catara | 2026-11-25 22:32 CET] Paste buttons for Song Title, Artist & Album
+	{ d_agup_push_proc,    156, 56,  40,  20,  0,   0,   0,      0,      0,   0,   "Paste",                eof_etext,  (void *)eof_props_paste_btn },
+	{ d_agup_push_proc,    156, 104, 40,  20,  0,   0,   0,      0,      0,   0,   "Paste",                eof_etext2, (void *)eof_props_paste_btn },
+	{ d_agup_push_proc,    156, 200, 40,  20,  0,   0,   0,      0,      0,   0,   "Paste",                eof_etext8, (void *)eof_props_paste_btn },
+	// [END gemini&catara | 2026-11-25 22:32 CET]
 	// [END gemini&catara | 2026-11-24 15:42 CET]
 	{ NULL,                0,   0,   0,   0,   0,   0,   0,    0,      0,   0,   NULL,                   NULL, NULL }
 };
