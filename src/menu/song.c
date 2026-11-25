@@ -295,12 +295,12 @@ static void eof_cdlc_meta_rw(DIALOG *dlg, int save) {
 			fprintf(f, "Songtitle=%s\nArtist=%s\nCharter=%s\nAlbum=%s\nGenre=%s\n", eof_etext, eof_etext2, eof_etext3, eof_etext8, eof_etext9);
 			fprintf(f, "TrackNumber=%s\nDelay=%s\nYear=%s\nDifficulty=%s\nLoadingText=%s\n", eof_etext10, eof_etext4, eof_etext5, eof_etext7, eof_etext6);
 			fprintf(f, "Lyrics=%d\nEighthNoteHOPO=%d\nFretHandPos1_PG=%d\nFretHandPos1_PB=%d\nAccurateTS=%d\nFoFLCExportWithoutPitchShifts=%d\n",
-				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0,
-				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0,
-				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0,
-				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0,
-				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0,
-				(eof_song_properties_dialog.flags & D_SELECTED) ? 1 : 0);
+				(eof_song_properties_dialog[23].flags & D_SELECTED) ? 1 : 0,
+				(eof_song_properties_dialog[24].flags & D_SELECTED) ? 1 : 0,
+				(eof_song_properties_dialog[25].flags & D_SELECTED) ? 1 : 0,
+				(eof_song_properties_dialog[26].flags & D_SELECTED) ? 1 : 0,
+				(eof_song_properties_dialog[27].flags & D_SELECTED) ? 1 : 0,
+				(eof_song_properties_dialog[28].flags & D_SELECTED) ? 1 : 0);
 			fclose(f);
 		}
 	}
