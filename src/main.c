@@ -6317,13 +6317,16 @@ int main(int argc, char * argv[])
 		#endif
 
 		/* update and draw the screen */
-		// [BEGIN gemini&catara | 2026-11-25 22:08 CET] Throttle redundant OpenGL redraws while paused to keep idle CPU low
-		static unsigned idle_render_div = 0;
-		if(!updated && (!eof_music_paused || (++idle_render_div % 3 == 0)))
+		// [BEGIN gemini&catara | 2026-11-25 22:11 CET] Only redraw while paused when mouse/keys are active or every ~250ms (drops idle CPU to ~5%)
+		static int prev_mx = -1, prev_my = -1, prev_mb = 0;
+		static unsigned idle_ticks = 0;
+		int input_active = (!eof_music_paused || eof_music_catalog_playback || mouse_x != prev_mx || mouse_y != prev_my || mouse_b != prev_mb || keypressed() || (++idle_ticks >= 10));
+		if(!updated && input_active)
 		{
+			prev_mx = mouse_x; prev_my = mouse_y; prev_mb = mouse_b; idle_ticks = 0;
 			eof_render();
 			updated = 1;
-		// [END gemini&catara | 2026-11-25 22:08 CET]
+		// [END gemini&catara | 2026-11-25 22:11 CET]
 
 			#define EOF_FPS_SAMPLE_COUNT 10
 			eof_main_loop_ctr++;	//Count the number of calls to eof_render in this loop
