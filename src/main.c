@@ -5483,18 +5483,6 @@ int eof_initialize(int argc, char * argv[])
 	if(eof_song_loaded)
 	{	//The command line load succeeded (or a project was recovered), perform some common initialization
 		eof_init_after_load(0);	//Initialize variables
-		// [BEGIN gemini&catara | 2026-11-26 01:30 CET] Restore dual-lane tracks & playback speed
-		{
-			int spr = get_config_int("autoload_state", "second_piano_roll", -1);
-			int t1 = get_config_int("autoload_state", "track1", -1);
-			int t2 = get_config_int("autoload_state", "track2", -1);
-			int spd = get_config_int("autoload_state", "playback_speed", -1);
-			if(t1 > 0 && t1 < (int)eof_song->tracks && eof_track_selected_menu[t1 - 1].proc) (void)eof_track_selected_menu[t1 - 1].proc();
-			if(t2 >= 0 && t2 < (int)eof_song->tracks) eof_selected_track2 = (unsigned)t2;
-			if(spr == 0 || spr == 1) eof_display_second_piano_roll = (char)spr;
-			if(spd > 0 && spd <= 2000) eof_playback_speed = spd;
-		}
-		// [END gemini&catara | 2026-11-26 01:30 CET]
 		if(!eof_repair_midi_import_grid_snap())
 		{
 			eof_log("\tGrid snap correction failed.", 1);
@@ -5561,6 +5549,19 @@ int eof_initialize(int argc, char * argv[])
 		eof_set_up_native_menus(eof_main_menu);
 	#endif
 
+	// [BEGIN gemini&catara | 2026-11-26 02:23 CET] Restore dual-lane tracks & playback speed after all startup defaults
+	if(eof_song_loaded && eof_song)
+	{
+		int spr = get_config_int("autoload_state", "second_piano_roll", -1);
+		int t1 = get_config_int("autoload_state", "track1", -1);
+		int t2 = get_config_int("autoload_state", "track2", -1);
+		int spd = get_config_int("autoload_state", "playback_speed", -1);
+		if(t1 > 0 && t1 < (int)eof_song->tracks && eof_track_selected_menu[t1 - 1].proc) (void)eof_track_selected_menu[t1 - 1].proc();
+		if(t2 >= 0 && t2 < (int)eof_song->tracks) eof_selected_track2 = (unsigned)t2;
+		if(spr == 0 || spr == 1) eof_display_second_piano_roll = (char)spr;
+		if(spd > 0 && spd <= 2000) eof_playback_speed = spd;
+	}
+	// [END gemini&catara | 2026-11-26 02:23 CET]
 	return 1;
 }
 
