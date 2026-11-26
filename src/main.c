@@ -6303,11 +6303,15 @@ int main(int argc, char * argv[])
 		al_start_timer(timer);
 	#endif
 
-	// [BEGIN gemini&catara | 2026-11-24 15:32 CET] Default to PART REAL_BASS (menu index 7) and 1st difficulty (0)
-	if((eof_track_selected_menu + 7)->proc) (void)(eof_track_selected_menu + 7)->proc();
+	// [BEGIN gemini&catara | 2026-11-26 02:41 CET] Restore saved primary track (fallback PART REAL_BASS) & 1st difficulty (0)
+	{
+		int saved_t1 = get_config_int("autoload_state", "track1", 8);
+		int m_idx = (saved_t1 > 0 && saved_t1 < 16) ? (saved_t1 - 1) : 7;
+		if((eof_track_selected_menu + m_idx)->proc) (void)(eof_track_selected_menu + m_idx)->proc();
+	}
 	eof_note_type = 0;
 	eof_note_type_i = 0;
-	// [END gemini&catara | 2026-11-24 15:32 CET]
+	// [END gemini&catara | 2026-11-26 02:41 CET]
 	eof_log("\tEntering main program loop", 1);
 
 	time1 = clock();
