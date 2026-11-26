@@ -596,7 +596,7 @@ void eof_prepare_file_menu(void)
 	{
 		int fi;
 		for(fi = 0; eof_file_menu[fi].text != NULL; fi++)
-			if(eof_file_menu[fi].proc == eof_menu_file_default_ini_settings) eof_file_menu[fi].flags &= ~D_HIDDEN;
+			if(eof_file_menu[fi].proc == eof_menu_file_default_ini_settings) eof_file_menu[fi].flags &= ~(D_HIDDEN | D_DISABLED);
 	}
 	// [END gemini&catara | 2026-11-26 03:20 CET]
 	if(eof_create_filtered_menu(eof_file_menu, eof_filtered_file_menu, EOF_SCRATCH_MENU_SIZE))
