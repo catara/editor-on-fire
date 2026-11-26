@@ -987,7 +987,9 @@ int eof_import_drums_rock_track_diff(char * fn)
 						if(!drumrollerror)
 						{	//If the user wasn't warned about this yet
 							char *error_message = "Warning:  At least one drum roll could not be added during import";
-							allegro_message(error_message);
+							// [BEGIN gemini&catara | 2026-11-26 03:11 CET] Fix -Wformat-security warning
+							allegro_message("%s", error_message);
+							// [END gemini&catara | 2026-11-26 03:11 CET]
 							eof_log(error_message, 1);
 							drumrollerror = 1;
 						}
