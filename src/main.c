@@ -5489,10 +5489,10 @@ int eof_initialize(int argc, char * argv[])
 			int t1 = get_config_int("autoload_state", "track1", -1);
 			int t2 = get_config_int("autoload_state", "track2", -1);
 			int spd = get_config_int("autoload_state", "playback_speed", -1);
-			if(t1 > 0 && t1 < (int)eof_song->tracks && eof_track_is_pro_guitar_track(eof_song, t1)) eof_selected_track = (unsigned)t1;
+			if(t1 > 0 && t1 < (int)eof_song->tracks) { eof_selected_track = (unsigned)t1; eof_select_track((unsigned)t1); }
 			if(t2 >= 0 && t2 < (int)eof_song->tracks) eof_selected_track2 = (unsigned)t2;
 			if(spr == 0 || spr == 1) eof_display_second_piano_roll = (char)spr;
-			if(spd > 0 && spd <= 200) eof_playback_speed = spd;
+			if(spd > 0 && spd <= 2000) eof_playback_speed = spd;
 		}
 		// [END gemini&catara | 2026-11-26 01:30 CET]
 		if(!eof_repair_midi_import_grid_snap())
