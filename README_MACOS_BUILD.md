@@ -2,7 +2,7 @@
 
 - **Authors:** gemini 3.1 & catara
 - **Fork Repository:** `https://github.com` (forked from `raynebc/editor-on-fire` `rc16`)
-- **Current Version:** `v0.1.46.20261126-0253` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
+- **Current Version:** `v0.1.47.20261126-0257` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
 - **Last Updated:** 2026-11-25 22:22 CET
 - **Target Platform:** Apple Silicon Macs (M1/M2/M3/M4+) running **macOS 27.2.x** (plus portable `linux/amd64` Docker + XQuartz build)
 - **Dependencies:** `NewCreature/Allegro-Legacy` + `Allegro 5` + `alogg` + `dylibbundler`
@@ -147,3 +147,4 @@ open ~/Desktop/EOF-XQuartz.app
 | `v0.1.44.20261126-0241` | 2026-11-26 02:41 | Automated build | Compiled via build script |
 | `v0.1.45.20261126-0251` | 2026-11-26 02:51 | Automated build | Compiled via build script |
 | `v0.1.46.20261126-0253` | 2026-11-26 02:53 | Automated build | Compiled via build script |
+| `v0.1.47.20261126-0257` | 2026-11-26 02:57 | Automated build | Compiled via build script |
