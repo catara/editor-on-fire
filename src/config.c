@@ -284,7 +284,9 @@ void eof_load_config(char * fn)
 	eof_last_new_event_track_specific_status = get_config_int("preferences", "eof_last_new_event_track_specific_status", 0);
 	eof_convert_measure_note_gap = get_config_int("preferences", "eof_convert_measure_note_gap", 1);
 	eof_auto_show_waveform = get_config_int("preferences", "eof_auto_show_waveform", 0);
-	eof_rocksmith_focus = get_config_int("preferences", "eof_rocksmith_focus", 0);
+	// [BEGIN gemini&catara | 2026-11-26 03:28 CET] Default Rocksmith focus to enabled (1)
+	eof_rocksmith_focus = get_config_int("preferences", "eof_rocksmith_focus", 1);
+	// [END gemini&catara | 2026-11-26 03:28 CET]
 	eof_render_grid_lines = get_config_int("preferences", "eof_render_grid_lines", 0);
 	eof_render_bass_drum_in_lane = get_config_int("preferences", "eof_render_bass_drum_in_lane", 0);
 	eof_vanish_y = get_config_int("preferences", "eof_vanish_y", 0);
