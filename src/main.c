@@ -7097,7 +7097,9 @@ int eof_validate_temp_folder(void)
 	#ifdef ALLEGRO_MACOSX
 		if(exe_is_bundle(correct_wd))
 		{
-			(void) strncat(correct_wd, "/Contents/Resources/eof/", sizeof(correct_wd) - strlen(correct_wd));
+			// [BEGIN gemini&catara | 2026-11-26 03:09 CET] Fix -Wstrncat-size buffer bound (- 1 for null terminator)
+			(void) strncat(correct_wd, "/Contents/Resources/eof/", sizeof(correct_wd) - strlen(correct_wd) - 1);
+			// [END gemini&catara | 2026-11-26 03:09 CET]
 		}
 		else
 		{
