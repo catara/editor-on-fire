@@ -127,7 +127,9 @@ void eof_load_config(char * fn)
 	/* read preferences */
 	eof_inverted_notes = get_config_int("preferences", "invert_notes", 0);
 	eof_lefty_mode = get_config_int("preferences", "lefty", 0);
-	eof_input_mode = get_config_int("preferences", "input_mode", EOF_INPUT_REX);
+	// [BEGIN gemini&catara | 2026-11-26 03:30 CET] Default Input Method to Piano Roll (EOF_INPUT_PIANO_ROLL)
+	eof_input_mode = get_config_int("preferences", "input_mode", EOF_INPUT_PIANO_ROLL);
+	// [END gemini&catara | 2026-11-26 03:30 CET]
 	eof_ogg_setting = get_config_int("preferences", "ogg_quality", 1);
 	eof_use_ts = get_config_int("preferences", "use_ts", 1);
 	if(!eof_use_ts)
@@ -213,7 +215,9 @@ void eof_load_config(char * fn)
 	{	//If eof_2d_render_top_option is invalid
 		eof_2d_render_top_option = 5;	//Reset to default of displaying note names
 	}
-	eof_color_set = get_config_int("preferences", "eof_color_set", 0);
+	// [BEGIN gemini&catara | 2026-11-26 03:30 CET] Default color set to Rocksmith (3)
+	eof_color_set = get_config_int("preferences", "eof_color_set", 3);
+	// [END gemini&catara | 2026-11-26 03:30 CET]
 	if(eof_color_set >= EOF_NUM_COLOR_SETS)
 	{	//Bounds check this value
 		eof_color_set = 0;
