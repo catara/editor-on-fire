@@ -4543,15 +4543,30 @@ void eof_editor_drum_logic(void)
 	}
 }
 
-// [BEGIN gemini&catara | 2026-11-26 00:24 CET] One-click Rocksmith Default Tones across active Pro Guitar/Bass tracks
-static void eof_add_or_replace_rs_tone(EOF_PRO_GUITAR_TRACK *tp, unsigned long pos, const char *name, unsigned long is_def)
-{
+// [BEGIN gemini&catara | 2026-11-26 02:58 CET] Interactive Rocksmith Default Tones + Auto-Sections (always shows summary dialog)
+static unsigned long eof_find_nearest_beat_index(unsigned long pos_ms) {
+	unsigned long b, best = 0, best_diff = ULONG_MAX;
+	if(!eof_song || eof_song->beats == 0) return 0;
+	for(b = 0; b < eof_song->beats; b++) {
+		if(!eof_song->beat[b]) continue;
+		unsigned long bpos = eof_song->beat[b]->pos;
+		unsigned long diff = (bpos >= pos_ms) ? (bpos - pos_ms) : (pos_ms - bpos);
+		if(diff < best_diff) { best_diff = diff; best = b; }
+	}
+	return best;
+}
+static int eof_has_exact_rs_tone(EOF_PRO_GUITAR_TRACK *tp, unsigned long pos, const char *name, unsigned long is_def) {
+	unsigned long i;
+	if(!tp || !name) return 0;
+	for(i = 0; i < tp->tonechanges; i++)
+		if(tp->tonechange[i].start_pos == pos && !ustricmp(tp->tonechange[i].name, name) && tp->tonechange[i].end_pos == is_def) return 1;
+	return 0;
+}
+static void eof_add_or_replace_rs_tone(EOF_PRO_GUITAR_TRACK *tp, unsigned long pos, const char *name, unsigned long is_def) {
 	unsigned long i;
 	if(!tp || !name || !name[0]) return;
-	for(i = 0; i < tp->tonechanges; i++)
-	{
-		if(tp->tonechange[i].start_pos == pos || !ustricmp(tp->tonechange[i].name, name))
-		{
+	for(i = 0; i < tp->tonechanges; i++) {
+		if(tp->tonechange[i].start_pos == pos || !ustricmp(tp->tonechange[i].name, name)) {
 			tp->tonechange[i].start_pos = pos;
 			tp->tonechange[i].end_pos = is_def;
 			strncpy(tp->tonechange[i].name, name, sizeof(tp->tonechange[i].name) - 1);
@@ -4559,8 +4574,7 @@ static void eof_add_or_replace_rs_tone(EOF_PRO_GUITAR_TRACK *tp, unsigned long p
 			return;
 		}
 	}
-	if(tp->tonechanges < EOF_MAX_PHRASES)
-	{
+	if(tp->tonechanges < EOF_MAX_PHRASES) {
 		tp->tonechange[tp->tonechanges].start_pos = pos;
 		tp->tonechange[tp->tonechanges].end_pos = is_def;
 		strncpy(tp->tonechange[tp->tonechanges].name, name, sizeof(tp->tonechange[tp->tonechanges].name) - 1);
@@ -4568,55 +4582,131 @@ static void eof_add_or_replace_rs_tone(EOF_PRO_GUITAR_TRACK *tp, unsigned long p
 		tp->tonechanges++;
 	}
 }
-
-static void eof_apply_default_rs_tones(void)
-{
+static void eof_apply_default_rs_tones(void) {
 	int trs[4] = {9, 8, 14, 11};
+	const char *tr_labels[4] = {"Lead", "Bass", "Bonus Lead", "Bonus Bass"};
 	const char *def_gtr = get_config_string("rocksmith_tones", "default_guitar", "Default_Guitar");
 	const char *def_bass = get_config_string("rocksmith_tones", "default_bass", "Default_Bass");
 	const char *lead_tone = get_config_string("rocksmith_tones", "lead_tone", "Guitar_Lead");
 	const char *rhy_tone = get_config_string("rocksmith_tones", "rhythm_tone", "Guitar_Rhythm");
 	const char *bass_tone = get_config_string("rocksmith_tones", "bass_tone", "Bass");
-	int t;
+	char summary[3072] = {0};
+	unsigned long tr_first_note[4] = {ULONG_MAX, ULONG_MAX, ULONG_MAX, ULONG_MAX};
+	unsigned long tr_pre_pos[4] = {0, 0, 0, 0};
+	const char *tr_start_tone[4] = {NULL, NULL, NULL, NULL};
+	const char *tr_main_tone[4] = {NULL, NULL, NULL, NULL};
+	int active_count = 0, has_rs_sections = 0, actions_needed = 0, t;
+	unsigned long ev, pad_end = 0;
+	unsigned long earliest_tone_pos = ULONG_MAX, earliest_note_pos = ULONG_MAX, second_note_pos = ULONG_MAX, lead_note_pos = ULONG_MAX;
 	if(!eof_song) return;
-	eof_prepare_undo(EOF_UNDO_TYPE_NONE);
-	for(t = 0; t < 4; t++)
-	{
-		int tr = trs[t];
-		EOF_PRO_GUITAR_TRACK *tp;
-		unsigned long n, first_pos = ULONG_MAX, pre_pos, pad_end = 0, tnum;
+	if(eof_song->beats > 0 && eof_song->beat[0]) pad_end = eof_song->beat[0]->pos;
+	for(t = 0; t < 4; t++) {
+		int tr = trs[t]; EOF_PRO_GUITAR_TRACK *tp; unsigned long n, first_pos = ULONG_MAX, pre_pos, tnum;
 		int is_bass = (tr == 8 || tr == 11);
-		const char *start_tone = is_bass ? def_bass : def_gtr;
-		const char *main_tone;
 		if(tr >= (int)eof_song->tracks || !eof_song->track[tr]) continue;
 		tnum = eof_song->track[tr]->tracknum;
 		if(tnum >= eof_song->pro_guitar_tracks) continue;
 		tp = eof_song->pro_guitar_track[tnum];
 		if(!tp || tp->notes == 0) continue;
 		for(n = 0; n < tp->notes; n++)
-		{
-			if(tp->note[n] && tp->note[n]->pos < first_pos)
-				first_pos = tp->note[n]->pos;
-		}
+			if(tp->note[n] && tp->note[n]->pos < first_pos) first_pos = tp->note[n]->pos;
 		if(first_pos == ULONG_MAX) continue;
-		if(eof_song->beats > 0 && eof_song->beat[0])
-			pad_end = eof_song->beat[0]->pos;
-		if(is_bass) main_tone = bass_tone;
-		else if(tp->arrangement == 2) main_tone = rhy_tone;
-		else main_tone = lead_tone;
-
+		active_count++; tr_first_note[t] = first_pos; tr_start_tone[t] = is_bass ? def_bass : def_gtr;
+		if(is_bass) tr_main_tone[t] = bass_tone;
+		else if(tp->arrangement == 2) tr_main_tone[t] = rhy_tone;
+		else tr_main_tone[t] = lead_tone;
 		if(first_pos >= 500 && (pad_end == 0 || first_pos >= pad_end + 500)) pre_pos = first_pos - 500;
 		else pre_pos = (first_pos > 50) ? (first_pos - 50) : ((first_pos > 1) ? 1 : 0);
 		if(pre_pos == 0 && first_pos > 1) pre_pos = 1;
-
-		eof_add_or_replace_rs_tone(tp, 0, start_tone, 0);
-		if(pre_pos > 0) eof_add_or_replace_rs_tone(tp, pre_pos, main_tone, 1);
-		strncpy(tp->defaulttone, main_tone, sizeof(tp->defaulttone) - 1);
+		tr_pre_pos[t] = pre_pos;
+		if(pre_pos < earliest_tone_pos) earliest_tone_pos = pre_pos;
+		if(first_pos < earliest_note_pos) earliest_note_pos = first_pos;
+		if(tr == 9) lead_note_pos = first_pos;
+		{ int already = (eof_has_exact_rs_tone(tp, 0, tr_start_tone[t], 0) && (pre_pos == 0 || eof_has_exact_rs_tone(tp, pre_pos, tr_main_tone[t], 1)) && !ustricmp(tp->defaulttone, tr_main_tone[t]));
+		  char line[256]; if(!already) actions_needed++;
+		  snprintf(line, sizeof(line), "%s %s: 0ms '%s' + %lums '%s' (Default)
+", already ? "[OK]" : "[+]", tr_labels[t], tr_start_tone[t], pre_pos, tr_main_tone[t]);
+		  strncat(summary, line, sizeof(summary) - strlen(summary) - 1); }
+	}
+	if(active_count == 0) { allegro_message("No populated Pro Guitar/Bass tracks found."); return; }
+	for(t = 0; t < 4; t++)
+		if(tr_first_note[t] != ULONG_MAX && tr_first_note[t] > earliest_note_pos && tr_first_note[t] < second_note_pos) second_note_pos = tr_first_note[t];
+	for(ev = 0; ev < eof_song->text_events; ev++)
+		if(eof_song->text_event[ev] && (eof_song->text_event[ev]->flags & EOF_EVENT_FLAG_RS_SECTION)) { has_rs_sections = 1; break; }
+	if(has_rs_sections) {
+		strncat(summary, "
+Sections skipped (existing RS sections found):
+", sizeof(summary) - strlen(summary) - 1);
+		for(ev = 0; ev < eof_song->text_events; ev++) {
+			if(eof_song->text_event[ev] && (eof_song->text_event[ev]->flags & EOF_EVENT_FLAG_RS_SECTION)) {
+				unsigned long bidx = eof_song->text_event[ev]->pos;
+				unsigned long bms = (bidx < eof_song->beats && eof_song->beat[bidx]) ? eof_song->beat[bidx]->pos : 0;
+				char sline[256]; snprintf(sline, sizeof(sline), "  - '%s' @ beat %lu (%lums)
+", eof_song->text_event[ev]->text, bidx + 1, bms);
+				strncat(summary, sline, sizeof(summary) - strlen(summary) - 1);
+			}
+		}
+	} else if(eof_song->beats > 0) {
+		unsigned long intro_beat = eof_find_nearest_beat_index(earliest_tone_pos);
+		char sline[256]; actions_needed++;
+		snprintf(sline, sizeof(sline), "[+] Section 'Intro' (All Tracks) @ beat %lu (%lums)
+", intro_beat + 1, eof_song->beat[intro_beat]->pos);
+		strncat(summary, sline, sizeof(summary) - strlen(summary) - 1);
+		if(second_note_pos != ULONG_MAX && second_note_pos >= earliest_note_pos + 2000) {
+			unsigned long pv_beat = eof_find_nearest_beat_index(second_note_pos);
+			snprintf(sline, sizeof(sline), "[+] Section 'Pre-verse' (All Tracks) @ beat %lu (%lums)
+", pv_beat + 1, eof_song->beat[pv_beat]->pos);
+			strncat(summary, sline, sizeof(summary) - strlen(summary) - 1);
+		}
+		if(lead_note_pos != ULONG_MAX && lead_note_pos >= earliest_note_pos + 30000) {
+			unsigned long solo_beat = eof_find_nearest_beat_index(lead_note_pos);
+			snprintf(sline, sizeof(sline), "[+] Section 'solo' (All Tracks) @ beat %lu (%lums)
+", solo_beat + 1, eof_song->beat[solo_beat]->pos);
+			strncat(summary, sline, sizeof(summary) - strlen(summary) - 1);
+		}
+	}
+	if(!actions_needed) strncat(summary, "
+No changes needed (all tones & sections already present).", sizeof(summary) - strlen(summary) - 1);
+	eof_cursor_visible = 0; eof_pen_visible = 0; eof_render();
+	{
+		DIALOG confirm_dlg[5] = {
+			{ eof_window_proc, 0, 30, 560, 270, 2, 23, 0, 0, 0, 0, "Default Tones & Sections Summary", NULL, NULL },
+			{ d_agup_textbox_proc, 14, 62, 532, 194, 2, 23, 0, 0, 0, 0, summary, NULL, NULL },
+			{ d_agup_button_proc, 160, 266, 100, 24, 2, 23, 13, D_EXIT, 0, 0, actions_needed ? "&Apply" : "&OK", NULL, NULL },
+			{ d_agup_button_proc, 300, 266, 100, 24, 2, 23, 27, D_EXIT, 0, 0, "&Cancel", NULL, NULL },
+			{ NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL }
+		};
+		eof_color_dialog(confirm_dlg, gui_fg_color, gui_bg_color);
+		eof_conditionally_center_dialog(confirm_dlg);
+		if(eof_popup_dialog(confirm_dlg, 2) != 2 || !actions_needed) { eof_cursor_visible = 1; eof_pen_visible = 1; return; }
+	}
+	eof_cursor_visible = 1; eof_pen_visible = 1;
+	eof_prepare_undo(EOF_UNDO_TYPE_NONE);
+	for(t = 0; t < 4; t++) {
+		int tr = trs[t]; EOF_PRO_GUITAR_TRACK *tp;
+		if(tr_first_note[t] == ULONG_MAX) continue;
+		tp = eof_song->pro_guitar_track[eof_song->track[tr]->tracknum];
+		eof_add_or_replace_rs_tone(tp, 0, tr_start_tone[t], 0);
+		if(tr_pre_pos[t] > 0) eof_add_or_replace_rs_tone(tp, tr_pre_pos[t], tr_main_tone[t], 1);
+		strncpy(tp->defaulttone, tr_main_tone[t], sizeof(tp->defaulttone) - 1);
 		tp->defaulttone[sizeof(tp->defaulttone) - 1] = 0;
+	}
+	if(!has_rs_sections && eof_song->beats > 0) {
+		unsigned long intro_beat = eof_find_nearest_beat_index(earliest_tone_pos);
+		(void) eof_song_add_text_event(eof_song, intro_beat, "Intro", 0, EOF_EVENT_FLAG_RS_SECTION, 0);
+		if(second_note_pos != ULONG_MAX && second_note_pos >= earliest_note_pos + 2000) {
+			unsigned long pv_beat = eof_find_nearest_beat_index(second_note_pos);
+			if(pv_beat != intro_beat) (void) eof_song_add_text_event(eof_song, pv_beat, "Pre-verse", 0, EOF_EVENT_FLAG_RS_SECTION, 0);
+		}
+		if(lead_note_pos != ULONG_MAX && lead_note_pos >= earliest_note_pos + 30000) {
+			unsigned long solo_beat = eof_find_nearest_beat_index(lead_note_pos);
+			(void) eof_song_add_text_event(eof_song, solo_beat, "solo", 0, EOF_EVENT_FLAG_RS_SECTION, 0);
+		}
+		eof_sort_events(eof_song);
 	}
 	eof_fix_window_title();
 }
-// [END gemini&catara | 2026-11-26 00:24 CET]
+// [END gemini&catara | 2026-11-26 02:58 CET]
 
 void eof_editor_logic(void)
 {
