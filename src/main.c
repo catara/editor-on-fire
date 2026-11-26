@@ -5485,11 +5485,13 @@ int eof_initialize(int argc, char * argv[])
 		eof_init_after_load(0);	//Initialize variables
 		// [BEGIN gemini&catara | 2026-11-26 01:30 CET] Restore dual-lane tracks & playback speed
 		{
+			int spr = get_config_int("autoload_state", "second_piano_roll", -1);
 			int t1 = get_config_int("autoload_state", "track1", -1);
 			int t2 = get_config_int("autoload_state", "track2", -1);
 			int spd = get_config_int("autoload_state", "playback_speed", -1);
 			if(t1 > 0 && t1 < (int)eof_song->tracks && eof_track_is_pro_guitar_track(eof_song, t1)) eof_selected_track = (unsigned)t1;
 			if(t2 >= 0 && t2 < (int)eof_song->tracks) eof_selected_track2 = (unsigned)t2;
+			if(spr == 0 || spr == 1) eof_display_second_piano_roll = (char)spr;
 			if(spd > 0 && spd <= 200) eof_playback_speed = spd;
 		}
 		// [END gemini&catara | 2026-11-26 01:30 CET]
@@ -5577,6 +5579,7 @@ void eof_exit(void)
 	(void) eof_validate_temp_folder();	//Attempt to set the current working directory if it isn't EOF's executable/resource folder
 
 	// [BEGIN gemini&catara | 2026-11-26 01:30 CET] Persist active primary/secondary tracks & playback speed
+	set_config_int("autoload_state", "second_piano_roll", (int)eof_display_second_piano_roll);
 	set_config_int("autoload_state", "track1", (int)eof_selected_track);
 	set_config_int("autoload_state", "track2", (int)eof_selected_track2);
 	set_config_int("autoload_state", "playback_speed", eof_playback_speed);
