@@ -296,16 +296,23 @@ DIALOG eof_custom_snap_dialog[] =
 	{ NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL }
 };
 
+// [BEGIN gemini&catara | 2026-11-26 02:48 CET] Add 5 quick rate preset buttons (10%, 25%, 50%, 75%, 100%) to Custom Playback Rate dialog
 DIALOG eof_custom_speed_dialog[] =
 {
 	/* (proc)                (x)  (y)  (w)  (h)  (fg)  (bg) (key) (flags) (d1) (d2) (dp)         (dp2)         (dp3) */
-	{ eof_shadow_box_proc,32,  68,  170, 95,  2,    23,  0,    0,       0,   0,   NULL,       NULL,         NULL },
-	{ d_agup_text_proc,      56,  84,  64,  8,   2,    23,  0,    0,       0,   0,   "Percent:", NULL,         NULL },
-	{ eof_verified_edit_proc,112, 80,  66,  20,  2,    23,  0,    0,       3,   0,   eof_etext2, "0123456789", NULL },
-	{ d_agup_button_proc,    42,  125, 68,  28,  2,    23,  '\r', D_EXIT,  0,   0,   "OK",       NULL,         NULL },
-	{ d_agup_button_proc,    120, 125, 68,  28,  2,    23,  0,    D_EXIT,  0,   0,   "Cancel",   NULL,         NULL },
+	{ eof_shadow_box_proc,   32,  68,  246, 118, 2,    23,  0,    0,       0,   0,   NULL,       NULL,         NULL },
+	{ d_agup_text_proc,      86,  84,  64,  8,   2,    23,  0,    0,       0,   0,   "Percent:", NULL,         NULL },
+	{ eof_verified_edit_proc,148, 80,  66,  20,  2,    23,  0,    0,       3,   0,   eof_etext2, "0123456789", NULL },
+	{ d_agup_button_proc,    68,  146, 76,  28,  2,    23,  '\r', D_EXIT,  0,   0,   "OK",       NULL,         NULL },
+	{ d_agup_button_proc,    164, 146, 76,  28,  2,    23,  0,    D_EXIT,  0,   0,   "Cancel",   NULL,         NULL },
+	{ d_agup_button_proc,    42,  110, 42,  24,  2,    23,  0,    D_EXIT,  0,   0,   "10%",      NULL,         NULL },
+	{ d_agup_button_proc,    88,  110, 42,  24,  2,    23,  0,    D_EXIT,  0,   0,   "25%",      NULL,         NULL },
+	{ d_agup_button_proc,    134, 110, 42,  24,  2,    23,  0,    D_EXIT,  0,   0,   "50%",      NULL,         NULL },
+	{ d_agup_button_proc,    180, 110, 42,  24,  2,    23,  0,    D_EXIT,  0,   0,   "75%",      NULL,         NULL },
+	{ d_agup_button_proc,    226, 110, 44,  24,  2,    23,  0,    D_EXIT,  0,   0,   "100%",     NULL,         NULL },
 	{ NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL }
 };
+// [END gemini&catara | 2026-11-26 02:48 CET]
 
 DIALOG eof_custom_zoom_dialog[] =
 {
@@ -2729,14 +2736,21 @@ int eof_menu_edit_playback_custom(void)
 	eof_color_dialog(eof_custom_speed_dialog, gui_fg_color, gui_bg_color);
 	eof_conditionally_center_dialog(eof_custom_speed_dialog);
 	(void) snprintf(eof_etext2, sizeof(eof_etext2) - 1, "%d", eof_playback_speed/10);		//Load the current playback speed into a string
-	if(eof_popup_dialog(eof_custom_speed_dialog, 2) == 3)		//If user activated "OK" from the custom speed dialog
+	// [BEGIN gemini&catara | 2026-11-26 02:48 CET] Handle OK or quick preset buttons (5=10%, 6=25%, 7=50%, 8=75%, 9=100%)
 	{
-		userinput = atoi(eof_etext2);
-//		if((userinput < 1) || (userinput > 99))			//User cannot specify to play at any speed not between 1% and 99%
-//			return 1;
-
-		eof_playback_speed = userinput * 10;
+		int ret = eof_popup_dialog(eof_custom_speed_dialog, 2);
+		if(ret == 3)
+		{
+			userinput = atoi(eof_etext2);
+			eof_playback_speed = userinput * 10;
+		}
+		else if(ret == 5) eof_playback_speed = 100;
+		else if(ret == 6) eof_playback_speed = 250;
+		else if(ret == 7) eof_playback_speed = 500;
+		else if(ret == 8) eof_playback_speed = 750;
+		else if(ret == 9) eof_playback_speed = 1000;
 	}
+	// [END gemini&catara | 2026-11-26 02:48 CET]
 	printf("%d\n", eof_playback_speed);
 	eof_edit_playback_menu[5].flags = D_SELECTED;
 	eof_cursor_visible = 1;
