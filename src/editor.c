@@ -4583,24 +4583,24 @@ static void eof_add_or_replace_rs_tone(EOF_PRO_GUITAR_TRACK *tp, unsigned long p
 	}
 }
 static void eof_apply_default_rs_tones(void) {
-	int trs[4] = {9, 8, 14, 11};
-	const char *tr_labels[4] = {"Lead", "Bass", "Bonus Lead", "Bonus Bass"};
+	int trs[5] = {9, 8, 12, 14, 11};
+	const char *tr_labels[5] = {"Lead", "Bass", "Rhythm", "Bonus Lead", "Bonus Bass"};
 	const char *def_gtr = get_config_string("rocksmith_tones", "default_guitar", "Default_Guitar");
 	const char *def_bass = get_config_string("rocksmith_tones", "default_bass", "Default_Bass");
 	const char *lead_tone = get_config_string("rocksmith_tones", "lead_tone", "Guitar_Lead");
 	const char *rhy_tone = get_config_string("rocksmith_tones", "rhythm_tone", "Guitar_Rhythm");
 	const char *bass_tone = get_config_string("rocksmith_tones", "bass_tone", "Bass");
 	char summary[3072] = {0};
-	unsigned long tr_first_note[4] = {ULONG_MAX, ULONG_MAX, ULONG_MAX, ULONG_MAX};
-	unsigned long tr_pre_pos[4] = {0, 0, 0, 0};
-	const char *tr_start_tone[4] = {NULL, NULL, NULL, NULL};
-	const char *tr_main_tone[4] = {NULL, NULL, NULL, NULL};
+	unsigned long tr_first_note[5] = {ULONG_MAX, ULONG_MAX, ULONG_MAX, ULONG_MAX, ULONG_MAX};
+	unsigned long tr_pre_pos[5] = {0, 0, 0, 0, 0};
+	const char *tr_start_tone[5] = {NULL, NULL, NULL, NULL, NULL};
+	const char *tr_main_tone[5] = {NULL, NULL, NULL, NULL, NULL};
 	int active_count = 0, has_rs_sections = 0, actions_needed = 0, t;
 	unsigned long ev, pad_end = 0;
 	unsigned long earliest_tone_pos = ULONG_MAX, earliest_note_pos = ULONG_MAX, second_note_pos = ULONG_MAX, lead_note_pos = ULONG_MAX;
 	if(!eof_song) return;
 	if(eof_song->beats > 0 && eof_song->beat[0]) pad_end = eof_song->beat[0]->pos;
-	for(t = 0; t < 4; t++) {
+	for(t = 0; t < 5; t++) {
 		int tr = trs[t]; EOF_PRO_GUITAR_TRACK *tp; unsigned long n, first_pos = ULONG_MAX, pre_pos, tnum;
 		int is_bass = (tr == 8 || tr == 11);
 		if(tr >= (int)eof_song->tracks || !eof_song->track[tr]) continue;
@@ -4628,7 +4628,7 @@ static void eof_apply_default_rs_tones(void) {
 		  strncat(summary, line, sizeof(summary) - strlen(summary) - 1); }
 	}
 	if(active_count == 0) { allegro_message("No populated Pro Guitar/Bass tracks found."); return; }
-	for(t = 0; t < 4; t++)
+	for(t = 0; t < 5; t++)
 		if(tr_first_note[t] != ULONG_MAX && tr_first_note[t] > earliest_note_pos && tr_first_note[t] < second_note_pos) second_note_pos = tr_first_note[t];
 	for(ev = 0; ev < eof_song->text_events; ev++)
 		if(eof_song->text_event[ev] && (eof_song->text_event[ev]->flags & EOF_EVENT_FLAG_RS_SECTION)) { has_rs_sections = 1; break; }
@@ -4674,7 +4674,7 @@ static void eof_apply_default_rs_tones(void) {
 	}
 	eof_cursor_visible = 1; eof_pen_visible = 1;
 	eof_prepare_undo(EOF_UNDO_TYPE_NONE);
-	for(t = 0; t < 4; t++) {
+	for(t = 0; t < 5; t++) {
 		int tr = trs[t]; EOF_PRO_GUITAR_TRACK *tp;
 		if(tr_first_note[t] == ULONG_MAX) continue;
 		tp = eof_song->pro_guitar_track[eof_song->track[tr]->tracknum];
