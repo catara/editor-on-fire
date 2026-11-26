@@ -2,7 +2,7 @@
 
 - **Authors:** gemini 3.1 & catara
 - **Fork Repository:** `https://github.com` (forked from `raynebc/editor-on-fire` `rc16`)
-- **Current Version:** `v0.1.50.20261126-0309` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
+- **Current Version:** `v0.1.51.20261126-0321` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
 - **Last Updated:** 2026-11-26 03:16 CET
 - **Target Platform:** Apple Silicon Macs (M1/M2/M3/M4+) running **macOS 27.2.x** (plus portable `linux/amd64` Docker + XQuartz build)
 - **Dependencies:** `NewCreature/Allegro-Legacy` + `Allegro 5` + `alogg` + `dylibbundler`
@@ -39,6 +39,7 @@
 3. **Smart Startup & Preference Persistence (`src/main.c`, `build_eof_cocoa.sh`)**
    - **Auto-Load Last Project:** Saves the active `.eof` path to `~/Library/Application Support/EOF/last_song.txt` on exit and re-opens it automatically on next launch if no CLI argument is passed.
    - **Session & Dual-Lane State Persistence (`[autoload_state]` in `eof.cfg`):** Saves and restores active primary track (`track1`, falling back to `PART REAL_BASS`), secondary piano roll state & track (`second_piano_roll`, `track2`), and playback speed (`playback_speed`) across launches on the **1st difficulty (`0`)**.
+   - **Keep `File > Default INI settings` Visible in Rocksmith Focus (`src/menu/file.c`):** Prevents `Rocksmith focus` from hiding `File > Default INI settings` so `charter = catara` and custom default `song.ini` tags remain accessible.
    - **Persistent `eof.cfg`:** Automatically backs up `Contents/Resources/eof/eof.cfg` to `~/Library/Application Support/EOF/eof.cfg` before rebuilding and restores it afterward.
 
 4. **Fork Attribution in `Help > About` (`src/menu/help.c`)**
@@ -155,3 +156,4 @@ open ~/Desktop/EOF-XQuartz.app
 | `v0.1.48.20261126-0302` | 2026-11-26 03:02 | Automated build | Compiled via build script |
 | `v0.1.49.20261126-0305` | 2026-11-26 03:05 | Automated build | Compiled via build script |
 | `v0.1.50.20261126-0309` | 2026-11-26 03:09 | Automated build | Compiled via build script |
+| `v0.1.51.20261126-0321` | 2026-11-26 03:21 | Automated build | Compiled via build script |

@@ -592,6 +592,13 @@ void eof_prepare_file_menu(void)
 		(void) snprintf(eof_file_notes_panel_menu_string, sizeof(eof_file_notes_panel_menu_string) - 1, "&User defined");
 	}
 
+	// [BEGIN gemini&catara | 2026-11-26 03:20 CET] Keep Default INI settings visible in File menu even when Rocksmith focus is enabled
+	{
+		int fi;
+		for(fi = 0; eof_file_menu[fi].text != NULL; fi++)
+			if(eof_file_menu[fi].proc == eof_menu_file_default_ini_settings) eof_file_menu[fi].flags &= ~D_HIDDEN;
+	}
+	// [END gemini&catara | 2026-11-26 03:20 CET]
 	if(eof_create_filtered_menu(eof_file_menu, eof_filtered_file_menu, EOF_SCRATCH_MENU_SIZE))
 	{	//If the File menu was recreated to filter out hidden items
 		eof_main_menu[0].child = eof_filtered_file_menu;	//Use this in the main menu
