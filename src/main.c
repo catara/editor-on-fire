@@ -5483,6 +5483,16 @@ int eof_initialize(int argc, char * argv[])
 	if(eof_song_loaded)
 	{	//The command line load succeeded (or a project was recovered), perform some common initialization
 		eof_init_after_load(0);	//Initialize variables
+		// [BEGIN gemini&catara | 2026-11-26 01:30 CET] Restore dual-lane tracks & playback speed
+		{
+			int t1 = get_config_int("autoload_state", "track1", -1);
+			int t2 = get_config_int("autoload_state", "track2", -1);
+			int spd = get_config_int("autoload_state", "playback_speed", -1);
+			if(t1 > 0 && t1 < (int)eof_song->tracks && eof_track_is_pro_guitar_track(eof_song, t1)) eof_selected_track = (unsigned)t1;
+			if(t2 >= 0 && t2 < (int)eof_song->tracks) eof_selected_track2 = (unsigned)t2;
+			if(spd > 0 && spd <= 200) eof_playback_speed = spd;
+		}
+		// [END gemini&catara | 2026-11-26 01:30 CET]
 		if(!eof_repair_midi_import_grid_snap())
 		{
 			eof_log("\tGrid snap correction failed.", 1);
@@ -5566,6 +5576,11 @@ void eof_exit(void)
 	//Delete the undo/redo related files
 	(void) eof_validate_temp_folder();	//Attempt to set the current working directory if it isn't EOF's executable/resource folder
 
+	// [BEGIN gemini&catara | 2026-11-26 01:30 CET] Persist active primary/secondary tracks & playback speed
+	set_config_int("autoload_state", "track1", (int)eof_selected_track);
+	set_config_int("autoload_state", "track2", (int)eof_selected_track2);
+	set_config_int("autoload_state", "playback_speed", eof_playback_speed);
+	// [END gemini&catara | 2026-11-26 01:30 CET]
 	eof_save_last_song_path();
 	eof_save_config("eof.cfg");
 	if(!exists("eof.cfg"))
