@@ -3,7 +3,7 @@
 - **Authors:** gemini 3.1 & catara
 - **Fork Repository:** `https://github.com` (forked from `raynebc/editor-on-fire` `rc16`)
 - **Current Version:** `v0.1.50.20261126-0309` (`v0.1.<compilation_counter>.<compilation_timestamp>`)
-- **Last Updated:** 2026-11-25 22:22 CET
+- **Last Updated:** 2026-11-26 03:16 CET
 - **Target Platform:** Apple Silicon Macs (M1/M2/M3/M4+) running **macOS 27.2.x** (plus portable `linux/amd64` Docker + XQuartz build)
 - **Dependencies:** `NewCreature/Allegro-Legacy` + `Allegro 5` + `alogg` + `dylibbundler`
 
@@ -17,15 +17,16 @@
      - **Blue + `*` prefix:** Track contains charted notes or lyrics.
      - **Dark Gray:** Empty track.
      - **Dynamic Arrangement & Flag Tags:** Automatically appends `:R` (Rhythm), `:L` (Lead), `:B` (Bonus), and `:A` (Alternate).
-   - **11 Action Shortcut Buttons (`+Tone`, `+Sect`, `FHP`, `Rest`, `Prev`, `Rate`, `Swap`, `Props`, `Sil`, `Imp`):**
+   - **11 Action Shortcut Buttons (`+Tone`, `DefT`, `+Sect`, `FHP`, `Rest`, `Prev`, `Rate`, `Swap`, `Props`, `Sil`, `Imp`):**
      - **`+Tone`:** Add Rocksmith tone change (`eof_track_rs_tone_change_add`).
+     - **`DefT`:** Interactive Default Rocksmith Tones & Auto-Sections across all 5 Pro Guitar/Bass tracks (`Lead`, `Bass`, `Rhythm`, `Bonus Lead`, `Bonus Bass`) — always displays a confirmation/status summary dialog listing planned actions or existing RS sections before applying; places `Default_Guitar`/`Default_Bass` at `0 ms`, places `Guitar_Lead`/`Guitar_Rhythm`/`Bass` `0.5s` (or `0.05s` near song start/pad end) before each track's first note as Default, reads customizable tone names from `eof.cfg` (`[rocksmith_tones]`), and auto-creates `Intro` / `Pre-verse` (`>=2s` second instrument entry) / `solo` (`>=30s` Lead entry) across all tracks when no sections exist yet.
      - **`+Sect`:** Add Rocksmith section marker (`eof_rocksmith_section_dialog_add`).
      - **`FHP`:** List/edit Fret Hand Positions (`eof_track_fret_hand_positions`).
      - **`Rest` / `Prev`:** Select rest of notes (`eof_menu_edit_select_rest`) or previous notes (`eof_menu_edit_select_previous`).
-     - **`Rate`:** Set custom playback speed (`eof_menu_edit_playback_custom`).
+     - **`Rate`:** Set custom playback speed (`eof_menu_edit_playback_custom`) with 5 one-click quick preset buttons (`10%`, `25%`, `50%`, `75%`, `100%`).
      - **`Swap`:** Swap main and secondary piano rolls (`eof_menu_song_swap_piano_rolls`).
      - **`Props`:** Open Song Properties (`eof_menu_song_properties`).
-     - **`Sil`:** Add Leading Silence (`eof_menu_song_add_silence`).
+     - **`Sil`:** Add Leading Silence (`eof_menu_song_add_silence`), defaulting to `Pad: Milliseconds` + `4000` ms and persisted in `eof.cfg` (`eof_leading_silence_radio`, `eof_leading_silence_amount`).
      - **`Imp`:** Context-aware import — opens **Lyrics Import** when `Voc` is active, and **Guitar Pro (.gp5) Import** on Guitar/Bass tracks.
 
 2. **CDLC / Fork Metadata Dialog (`Song > Properties > CDLC Meta...`, `src/menu/song.c`)**
@@ -37,7 +38,7 @@
 
 3. **Smart Startup & Preference Persistence (`src/main.c`, `build_eof_cocoa.sh`)**
    - **Auto-Load Last Project:** Saves the active `.eof` path to `~/Library/Application Support/EOF/last_song.txt` on exit and re-opens it automatically on next launch if no CLI argument is passed.
-   - **Default Track & Difficulty:** Initializes startup into **`PART REAL_BASS`** (`EOF_TRACK_REAL_BASS`) on the **1st difficulty (`0`)**.
+   - **Session & Dual-Lane State Persistence (`[autoload_state]` in `eof.cfg`):** Saves and restores active primary track (`track1`, falling back to `PART REAL_BASS`), secondary piano roll state & track (`second_piano_roll`, `track2`), and playback speed (`playback_speed`) across launches on the **1st difficulty (`0`)**.
    - **Persistent `eof.cfg`:** Automatically backs up `Contents/Resources/eof/eof.cfg` to `~/Library/Application Support/EOF/eof.cfg` before rebuilding and restores it afterward.
 
 4. **Fork Attribution in `Help > About` (`src/menu/help.c`)**
@@ -69,6 +70,9 @@
 6. **Apple Silicon `oggenc` / `lame` Path Fix for Leading Silence & MP3 Import (`src/silence.c`, `src/main.c`)**
    - Upstream EOF hardcoded Intel-Mac `/usr/local/bin/oggenc` and `/usr/local/bin/lame` paths, causing Leading Silence (`Re-encode`) and MP3 conversion to fail with `Error code 48` on Apple Silicon Macs where Homebrew uses `/opt/homebrew/bin`.
    - Replaced hardcoded `/usr/local/bin/` tool paths with `PATH`-resolved `oggenc` / `lame` and prepended `Contents/Resources/eof:/opt/homebrew/bin:/usr/local/bin` to `PATH` at startup.
+
+7. **Compiler Buffer & Format-Security Warning Fixes (`src/main.c`, `src/dr.c`)**
+   - Fixed `-Wstrncat-size` in `src/main.c` (`sizeof(correct_wd) - strlen(correct_wd) - 1`) and `-Wformat-security` in `src/dr.c` (`allegro_message("%s", error_message)`).
 
 ---
 
