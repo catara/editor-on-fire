@@ -4624,8 +4624,7 @@ static void eof_apply_default_rs_tones(void) {
 		if(tr == 9) lead_note_pos = first_pos;
 		{ int already = (eof_has_exact_rs_tone(tp, 0, tr_start_tone[t], 0) && (pre_pos == 0 || eof_has_exact_rs_tone(tp, pre_pos, tr_main_tone[t], 1)) && !ustricmp(tp->defaulttone, tr_main_tone[t]));
 		  char line[256]; if(!already) actions_needed++;
-		  snprintf(line, sizeof(line), "%s %s: 0ms '%s' + %lums '%s' (Default)
-", already ? "[OK]" : "[+]", tr_labels[t], tr_start_tone[t], pre_pos, tr_main_tone[t]);
+		  snprintf(line, sizeof(line), "%s %s: 0ms '%s' + %lums '%s' (Default)\n", already ? "[OK]" : "[+]", tr_labels[t], tr_start_tone[t], pre_pos, tr_main_tone[t]);
 		  strncat(summary, line, sizeof(summary) - strlen(summary) - 1); }
 	}
 	if(active_count == 0) { allegro_message("No populated Pro Guitar/Bass tracks found."); return; }
@@ -4634,39 +4633,32 @@ static void eof_apply_default_rs_tones(void) {
 	for(ev = 0; ev < eof_song->text_events; ev++)
 		if(eof_song->text_event[ev] && (eof_song->text_event[ev]->flags & EOF_EVENT_FLAG_RS_SECTION)) { has_rs_sections = 1; break; }
 	if(has_rs_sections) {
-		strncat(summary, "
-Sections skipped (existing RS sections found):
-", sizeof(summary) - strlen(summary) - 1);
+		strncat(summary, "\nSections skipped (existing RS sections found):\n", sizeof(summary) - strlen(summary) - 1);
 		for(ev = 0; ev < eof_song->text_events; ev++) {
 			if(eof_song->text_event[ev] && (eof_song->text_event[ev]->flags & EOF_EVENT_FLAG_RS_SECTION)) {
 				unsigned long bidx = eof_song->text_event[ev]->pos;
 				unsigned long bms = (bidx < eof_song->beats && eof_song->beat[bidx]) ? eof_song->beat[bidx]->pos : 0;
-				char sline[256]; snprintf(sline, sizeof(sline), "  - '%s' @ beat %lu (%lums)
-", eof_song->text_event[ev]->text, bidx + 1, bms);
+				char sline[256]; snprintf(sline, sizeof(sline), "  - '%s' @ beat %lu (%lums)\n", eof_song->text_event[ev]->text, bidx + 1, bms);
 				strncat(summary, sline, sizeof(summary) - strlen(summary) - 1);
 			}
 		}
 	} else if(eof_song->beats > 0) {
 		unsigned long intro_beat = eof_find_nearest_beat_index(earliest_tone_pos);
 		char sline[256]; actions_needed++;
-		snprintf(sline, sizeof(sline), "[+] Section 'Intro' (All Tracks) @ beat %lu (%lums)
-", intro_beat + 1, eof_song->beat[intro_beat]->pos);
+		snprintf(sline, sizeof(sline), "[+] Section 'Intro' (All Tracks) @ beat %lu (%lums)\n", intro_beat + 1, eof_song->beat[intro_beat]->pos);
 		strncat(summary, sline, sizeof(summary) - strlen(summary) - 1);
 		if(second_note_pos != ULONG_MAX && second_note_pos >= earliest_note_pos + 2000) {
 			unsigned long pv_beat = eof_find_nearest_beat_index(second_note_pos);
-			snprintf(sline, sizeof(sline), "[+] Section 'Pre-verse' (All Tracks) @ beat %lu (%lums)
-", pv_beat + 1, eof_song->beat[pv_beat]->pos);
+			snprintf(sline, sizeof(sline), "[+] Section 'Pre-verse' (All Tracks) @ beat %lu (%lums)\n", pv_beat + 1, eof_song->beat[pv_beat]->pos);
 			strncat(summary, sline, sizeof(summary) - strlen(summary) - 1);
 		}
 		if(lead_note_pos != ULONG_MAX && lead_note_pos >= earliest_note_pos + 30000) {
 			unsigned long solo_beat = eof_find_nearest_beat_index(lead_note_pos);
-			snprintf(sline, sizeof(sline), "[+] Section 'solo' (All Tracks) @ beat %lu (%lums)
-", solo_beat + 1, eof_song->beat[solo_beat]->pos);
+			snprintf(sline, sizeof(sline), "[+] Section 'solo' (All Tracks) @ beat %lu (%lums)\n", solo_beat + 1, eof_song->beat[solo_beat]->pos);
 			strncat(summary, sline, sizeof(summary) - strlen(summary) - 1);
 		}
 	}
-	if(!actions_needed) strncat(summary, "
-No changes needed (all tones & sections already present).", sizeof(summary) - strlen(summary) - 1);
+	if(!actions_needed) strncat(summary, "\nNo changes needed (all tones & sections already present).", sizeof(summary) - strlen(summary) - 1);
 	eof_cursor_visible = 0; eof_pen_visible = 0; eof_render();
 	{
 		DIALOG confirm_dlg[5] = {
