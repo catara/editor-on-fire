@@ -706,6 +706,10 @@ void eof_load_config(char * fn)
 		(void) eof_default_ini_add(string, 0);	//Add the rebuilt string to the default INI entries
 	}
 	free_config_entries(&default_settings);
+	// [BEGIN gemini&catara | 2026-11-26 03:27 CET] Default to charter = catara when no default INI entries are configured yet
+	if(eof_default_ini_settings == 0)
+		(void) eof_default_ini_add("charter = catara", 1);
+	// [END gemini&catara | 2026-11-26 03:27 CET]
 
 	//Set MIDI parameters if applicable
 	if(eof_midi_pan != 50)
